@@ -15,3 +15,4 @@ Steps 1-5 are the same as steps 1-5 of [pisee installation instructions](https:/
    ---------------------- | -------
    bin/                   | Scripts that user `pi` may want to run
    workspace/             | Software that user `pi` may want to build
+8) Install and compile OpenCV - follow instructions [as described here](https://www.pyimagesearch.com/2017/09/04/raspbian-stretch-install-opencv-3-python-on-your-raspberry-pi/) to the tee.

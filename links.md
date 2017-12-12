@@ -8,4 +8,6 @@ Here is where we share any links that are relevant to our work on this project.
 * [mjpg_streamer installation](https://blog.miguelgrinberg.com/post/how-to-build-and-run-mjpg-streamer-on-the-raspberry-pi)
 * [raspicam (C++)](https://github.com/cedricve/raspicam)
 * [uv4l installation](http://www.linux-projects.org/uv4l/installation/)
+* [OpenCV installation instructions for Raspberry Pi](https://www.pyimagesearch.com/2017/09/04/raspbian-stretch-install-opencv-3-python-on-your-raspberry-pi/) - this recipe works for OpenCV version 3.3.1!
 * [low latency video streaming rpi -> opencv -- is this what we are going to try first?](http://petrkout.com/electronics/low-latency-0-4-s-video-streaming-from-raspberry-pi-mjpeg-streamer-opencv/)
+* [12 micro SD cards tested with Raspberry Pi](https://www.geek.com/chips/a-geek-tests-12-micro-sd-cards-with-a-raspberry-pi-to-find-the-fastest-1641182/)
