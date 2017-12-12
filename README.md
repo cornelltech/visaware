@@ -8,6 +8,6 @@ This section of this README file describes how files are arranged in this folder
 File or directory name | Purpose
 ---------------------- | -------
 README.md              | This file
-links.md               | URLs relevant to the project
+LINKS.md               | URLs relevant to the project
 pisee                  | Code + docs for raspberry pi that's connected to a camera
 pishow                 | -"- projector
