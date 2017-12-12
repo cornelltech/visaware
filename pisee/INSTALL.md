@@ -3,7 +3,7 @@
 1) Grab a blank micro-sd card and install the Raspbian OS on it in the most
 generic way possible. Download the image and follow instructions [here]
 (https://www.raspberrypi.org/downloads/raspbian/).
-2) On a mac, I used `etcher` to write the OS image to the micro-sd card
+2) On OS X, you can use `etcher` to write the OS image to the micro-sd card
 3) Upgrade and update packages. Insert micro-sd card into board and boot it,
 start a shell and type 
     ```
@@ -23,7 +23,7 @@ with a UK keyboard). Type
    * Enable the camera
    * Set the board's hostname to `pysee`
    * Set password for user `pi`
-6) Create two directories
+6) Create two directories under `/home/pi`: 
 
    File or directory name | Purpose
    ---------------------- | -------
