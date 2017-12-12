@@ -9,5 +9,5 @@ File or directory name | Purpose
 ---------------------- | -------
 README.md              | This file
 pisee                  | Code + docs for raspberry pi that's connected to a camera
-pishow                 | --"-- projector
+pishow                 | -"- projector
 
