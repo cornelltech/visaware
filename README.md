@@ -10,6 +10,6 @@ File or directory name | Purpose
 pisee/                 | All dev of Raspberry Pi that's connected to a camera
 pishow/                |     -"-                     connected to a projector
 .gitignore             | Files & patterns not included in this repository
-README.md              | This file
 LINKS.md               | URLs relevant to the project
+README.md              | This file
 
