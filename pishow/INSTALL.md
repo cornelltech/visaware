@@ -1,6 +1,7 @@
 # pyshow installation
 
-1-5) Same as [steps 1-4 of pisee installation](https://github.com/cornelltech/visaware/blob/master/pisee/INSTALL.md)
+Steps 1-5 are the same as steps 1-5 of [pisee installation instructions](https://github.com/cornelltech/visaware/blob/master/pisee/INSTALL.md)
+
 6) Configure the board with
     ```
     sudo raspi-config
