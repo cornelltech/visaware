@@ -7,6 +7,7 @@ import time
 
 URL = 'http://128.84.84.129:8080/?action=stream'
 BUFFER_LENGTH = 1024
+FONT_LOCATION = (550, 20)
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 FONT_SCALE = 0.5
 FONT_COLOR = 255
@@ -32,7 +33,7 @@ def main():
             end_time = time.time()
             fps = 1/(end_time-start_time)
 
-            cv2.putText(mog2, '%2.2f fps' % fps, (20, 460),
+            cv2.putText(mog2, '%2.2f fps' % fps, FONT_LOCATION,
                         FONT, FONT_SCALE, FONT_COLOR, FONT_LINE_TYPE)
 
             cv2.imshow('MOG2', mog2)
