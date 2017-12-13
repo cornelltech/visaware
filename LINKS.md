@@ -12,6 +12,8 @@ Here is where we share any links that are relevant to our work on this project.
 * [low latency video streaming rpi -> opencv -- is this what we are going to try first?](http://petrkout.com/electronics/low-latency-0-4-s-video-streaming-from-raspberry-pi-mjpeg-streamer-opencv/)
 * [12 micro SD cards tested with Raspberry Pi](https://www.geek.com/chips/a-geek-tests-12-micro-sd-cards-with-a-raspberry-pi-to-find-the-fastest-1641182/)
 
-### Using OpenCV with pishow
-* [Simple python-opencv code example](http://petrkout.com/electronics/low-latency-0-4-s-video-streaming-from-raspberry-pi-mjpeg-streamer-opencv/) - claims to be low-latency
-* [Another simple example](http://www.chioka.in/python-live-video-streaming-example/)
+### Using OpenCV on pishow
+* [Official OpenCV docs](https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_gui/py_video_display/py_video_display.html)
+* [Python example 1](http://petrkout.com/electronics/low-latency-0-4-s-video-streaming-from-raspberry-pi-mjpeg-streamer-opencv/) - this is the main one that shows how to decode a stream using `urllib`
+* [Python example 2](https://www.learnopencv.com/read-write-and-display-a-video-using-opencv-cpp-python/)
+* [Python example 3](http://www.chioka.in/python-live-video-streaming-example/)
