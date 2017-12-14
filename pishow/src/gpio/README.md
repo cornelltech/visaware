@@ -1,4 +1,4 @@
-# visaware/pishow/src/gpio
+# visaware/pishow/src/gpio/
 
 This directory contains the source code for GPIO functionality this board.
 
