@@ -1,4 +1,4 @@
-# visaware/pishow/src/cv
+# visaware/pishow/src/cv/
 
 This directory contains the source code of all computer vision related
 stuff done on the pishow board.
