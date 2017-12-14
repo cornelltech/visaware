@@ -1,6 +1,7 @@
-# visaware/pishow/src/
+# visaware/pishow/src/cv
 
-This directory contains the source code of all development for this board.
+This directory contains the source code of all computer vision related
+stuff done on the pishow board.
 
 ## Contents
 File or directory name | Purpose
