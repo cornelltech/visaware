@@ -20,7 +20,11 @@ with a UK keyboard). Type
     ```
     sudo dpkg-reconfigure keyboard-configuration
     ```
-6) Configure the board with
+6) Fix the clock to have the correct time zone via
+   ```
+   sudo dpkg-reconfigure tzdata
+   ```
+7) Configure the board with
     ```
     sudo raspi-config
     ```
@@ -28,27 +32,27 @@ with a UK keyboard). Type
    * Enable the camera
    * Set the board's hostname to `pysee`
    * Set password for user `pi`
-7) Create two directories under `/home/pi`: 
+8) Create two directories under `/home/pi`: 
 
    File or directory name | Purpose
    ---------------------- | -------
    bin/                   | Scripts that user `pi` may want to run
    workspace/             | Software that user `pi` may want to build
 
-8) Build `mjpg-streamer` in  a subdirectory of 'workspace/', using this 
+9) Build `mjpg-streamer` in  a subdirectory of 'workspace/', using this 
 experimental (raspicam) version: [https://github.com/jacksonliam/mjpg-streamer/](https://github.com/jacksonliam/mjpg-streamer/). Build this all the way up to and including the command
     ```
     sudo make install
     ```
    which will place installed files under `/usr/local/`
 
-9) In `bin/` we currently have the script that is responsible for running the
+10) In `bin/` we currently have the script that is responsible for running the
 `mjpg-streamer` executable you've built in the previous step. This script is
 where we set the command-line arguments we run `mjpeg-streamer` with. Currently it runs the following code:
     ```
     mjpg_streamer -i "input_raspicam.so -x 640 -y 480 -fps 30 -br 90 -co 100 -ifx watercolour" -o "output_http.so -w ./www"
     ```
-10) Set up the machine for automatically starting mjpeg-streamer upon boot (headless or not).  For this just add the following line to `/etc/rc.local`:
+11) Set up the machine for automatically starting mjpeg-streamer upon boot (headless or not).  For this just add the following line to `/etc/rc.local`:
     ```
     /home/pi/bin/run_mjpg_streamer.sh > /dev/null 2>&1
     ```
