@@ -20,8 +20,8 @@ def callback(frame):
     gray_blurred = cv2.GaussianBlur(gray_small, (BLUR_SIZE, BLUR_SIZE), 0)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(gray_blurred)
     gray_blurred = (gray_blurred-min_val)/(max_val-min_val)
+    # mask = FGBG.apply(255*gray_blurred)
     return FGBG.apply(255*gray_blurred)
-
 
 if __name__ == '__main__':
     pishow.main_loop(callback)
