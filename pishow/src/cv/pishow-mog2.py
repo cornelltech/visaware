@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
 import cv2
-import urllib
-import numpy
-import time
 import pishow
 
 FGBG = cv2.createBackgroundSubtractorMOG2()
