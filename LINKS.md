@@ -20,3 +20,6 @@ Here is where we share any links that are relevant to our work on this project.
 #### CV Processing
 * [Background subtraction](https://docs.opencv.org/3.1.0/db/d5c/tutorial_py_bg_subtraction.html) - using `BackgroundSubtractorMOG2`
 * [FPS python code](https://www.learnopencv.com/how-to-find-frame-rate-or-frames-per-second-fps-in-opencv-python-cpp/)
+
+#### System setup related
+* [SD card images](https://softwarebakery.com/shrinking-images-on-linux)
