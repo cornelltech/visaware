@@ -7,9 +7,16 @@ import pishow
 
 CAP = cv2.VideoCapture('../../../data/vid02.mov')
 
+done = False
 while (CAP.isOpened()):
     ret, frame = CAP.read()
-    cv2.imshow('frame', frame)
+
+    if ret:
+        cv2.imshow('frame', frame)
+    elif not done:
+        done = True
+        print 'Clip ended!'
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
