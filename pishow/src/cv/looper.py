@@ -13,6 +13,9 @@ FONT_SCALE = 0.5
 FONT_COLOR = 64
 FONT_LINE_TYPE = 2
 
+# constant for buffer we hold image data in while streaming from url
+BUFFER_LENGTH = 1024
+
 def parse_command_line(callback):
     """Process command line arguments"""
     progname = sys.argv[0]
@@ -25,17 +28,12 @@ def parse_command_line(callback):
         if arg == '-h' or arg == '--help':
             print usage
             sys.exit(0)
-        args = arg.split('=')
-        if len(args) != 2:
+        if arg[0:4] == 'url=':
+            return lambda: loop_url(callback, arg[4:])
+        elif arg[0:5] == 'file=':
+            return lambda: loop_camera_or_file(callback, arg[5:])
+        else:
             raise Exception('Malformed argument')
-        arg_name = args[0].strip()
-        arg_value = args[1].strip()
-        if arg_name == '' or arg_value == '':
-            raise Exception('Malformed argument')
-        if arg_name == 'url':
-            return lambda: loop_url(callback, arg_value)
-        elif arg_name == 'file':
-            return lambda: loop_camera_or_file(callback, arg_value)
     else:
         print usage_message
         raise Exception('Only one argument allowed, you gave %d' % n_args)
