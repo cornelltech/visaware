@@ -10,9 +10,9 @@ import looper
 import numpy
 
 
-LOG_FACTOR = 10
+LOG_FACTOR = 100
 ON_SIZE = 3
-OFF_SIZE = 11
+OFF_SIZE = 155
 
 def callback(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

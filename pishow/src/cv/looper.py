@@ -103,5 +103,5 @@ def show_image_w_fps(frame, fps):
 
 
 if __name__ == '__main__':
-    (looper.parse_command_line(None))()
+    (parse_command_line(None))()
     cv2.destroyAllWindows()
