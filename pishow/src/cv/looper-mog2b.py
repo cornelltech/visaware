@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 
-# an attempt to make the MOG2 result more stable with bad camera
+# same as looper-mog2.py but done at half res (displayed at full res)
 
 import cv2
-import pishow
+import looper
 
 FGBG = cv2.createBackgroundSubtractorMOG2()
 
 def callback(frame):
     small = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
     proc = FGBG.apply(small)
-    return cv2.resize(proc, (640, 480))
-    
+    return cv2.resize(proc, (0, 0), fx=2.0, fy=2.0)
+
+
 if __name__ == '__main__':
-    pishow.main_loop(callback)
+    (looper.parse_command_line(callback))()
+    cv2.destroyAllWindows()
