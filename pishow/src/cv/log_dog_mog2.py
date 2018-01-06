@@ -6,16 +6,16 @@
 
 import cv2
 import looper
-import looper_log_dog
+import log_dog
 
 
 FGBG = cv2.createBackgroundSubtractorMOG2()
 
 def callback(frame):
-    log_dog = looper_log_dog.callback(frame)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(log_dog)
-    rescaled = 255.0*(log_dog-min_val)/(max_val-min_val)
-    return FGBG.apply(rescaled)
+    log_dog_result = log_dog.callback(frame)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(log_dog_result)
+    log_dog_rescaled = 255.0*(log_dog_result-min_val)/(max_val-min_val)
+    return FGBG.apply(log_dog_rescaled)
 
 
 if __name__ == '__main__':

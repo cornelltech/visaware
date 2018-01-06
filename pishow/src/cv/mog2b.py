@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# same as looper_mog2.py but done at half res (displayed at full res)
+# same as mog2.py but done at half res (displayed at full res)
 
 import cv2
 import looper
