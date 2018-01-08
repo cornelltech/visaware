@@ -6,8 +6,9 @@ stuff done on the pishow board.
 ## Contents
 File or directory name | Purpose
 ---------------------- | -------
-looper.py | Generic OpenCV loop with no processing - just grabs frames from the stream as quickly as possible and displays them as-is.
+looper.py | Generic OpenCV loop with no processing - just grabs frames from the stream as quickly as possible and displays them as-is. Every other python file in this directory is an effect that does some processing and is based on looper for (a) parsing command line args to decide if to loop video from the built-in camera or from a file or from a URL; (b) display the processed version of each image frame grabbed, with the frames per second (FPS) overlayed on the processed image
 mog2.py | Uses the background subtraction method MOG2 built into OpenCV to show frame differences
-mog2?.py | Variations on above
 log_dog.py | A transform that removes illumination, showing reflectance alone (for the most part)
 log_dog_mog2.py | Background differencing on the above log-dog transform, should be more robust to bad lighting variations
+absdiff | Subtracts current frame - previous frame and takes absolute value of that difference
+log_dog_absdiff.py | Background differencing via absdiff on the above log-dog transform, should be more robust to bad lighting variations
