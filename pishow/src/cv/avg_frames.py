@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+import cv2
+import looper
+import gray
+import numpy
+
+
+class AbsDiff:
+    """average frames"""
+
+    def __init__(self):
+        """constructor"""
+        self.alpha = 0.06
+        self.frame = None
+
+    def apply(self, frame):
+        """returns diff"""
+        frame = numpy.float32(frame)
+        if self.frame is None:
+            self.frame = frame
+        else:
+            self.frame = cv2.accumulateWeighted(frame, self.frame, self.alpha)
+        return cv2.convertScaleAbs(self.frame)
+
+
+if __name__ == '__main__':
+    (looper.parse_command_line(AbsDiff()))()
+    cv2.destroyAllWindows()
