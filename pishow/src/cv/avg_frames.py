@@ -15,7 +15,7 @@ class AvgFrames:
 
     def __init__(self):
         """constructor"""
-        self.alpha = 0.09
+        self.alpha = 0.1
         self.frame = None
 
     def apply(self, frame):
@@ -29,5 +29,5 @@ class AvgFrames:
 
 
 if __name__ == '__main__':
-    (looper.parse_command_line(AbsDiff()))()
+    (looper.parse_command_line(AvgFrames()))()
     cv2.destroyAllWindows()

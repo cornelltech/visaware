@@ -12,7 +12,7 @@ class AvgNFrames:
 
     def __init__(self):
         """constructor"""
-        self.n_frames = 10
+        self.n_frames = 100
         self.frames = []
         self.avg_frame = None
 
@@ -30,5 +30,5 @@ class AvgNFrames:
 
 
 if __name__ == '__main__':
-    (looper.parse_command_line(AbsDiff()))()
+    (looper.parse_command_line(AvgNFrames()))()
     cv2.destroyAllWindows()
