@@ -18,7 +18,7 @@ class AbsDiff:
         """returns diff"""
         frame = self.gray.apply(frame)
         if self.last_frame is None:
-            self.last_frame = frame            
+            self.last_frame = frame
             return frame
         else:
             result = cv2.absdiff(frame, self.last_frame)

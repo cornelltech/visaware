@@ -7,17 +7,18 @@ import numpy
 
 # Check out Abid Rahman's blog here (almost the same idea):
 # opencvpython.blogspot.com/2012/07/background-extraction-using-running.html
+# NB: will get big errors after a while if don't normalize each frame
 
-class AbsDiff:
+class AvgFrames:
     """average frames"""
 
     def __init__(self):
         """constructor"""
-        self.alpha = 0.06
+        self.alpha = 0.09
         self.frame = None
 
     def apply(self, frame):
-        """returns diff"""
+        """returns avg of all frames after updating with weighted frame"""
         frame = numpy.float32(frame)
         if self.frame is None:
             self.frame = frame

@@ -25,7 +25,7 @@ class LogDog:
         """log-dog a frame"""
         log_scaled = self.log.apply(frame)
         blur_on = cv2.GaussianBlur(log_scaled, (ON_SIZE, ON_SIZE), 0)
-        blur_off = cv2.GaussianBlur(log_scaled, (OFF_SIZE, OFF_SIZE), 0)    
+        blur_off = cv2.GaussianBlur(log_scaled, (OFF_SIZE, OFF_SIZE), 0)
         return blur_on-blur_off
 
 
