@@ -6,6 +6,7 @@ import looper
 import gray
 import numpy
 
+
 # Check out Abid Rahman's blog here (almost the same idea):
 # opencvpython.blogspot.com/2012/07/background-extraction-using-running.html
 # NB: will get big errors after a while if don't normalize each frame
