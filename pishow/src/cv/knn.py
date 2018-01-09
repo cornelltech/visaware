@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""knn.py"""
 
 import cv2
 import looper

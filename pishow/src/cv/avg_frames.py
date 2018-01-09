@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""avg_frames.py"""
 
 import cv2
 import looper

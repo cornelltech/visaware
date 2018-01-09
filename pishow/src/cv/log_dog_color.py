@@ -1,10 +1,10 @@
 #!/usr/bin/env python
+"""log_dog_color.py"""
 
 # this one's just here to show what the original (subsampled) looks like when
 # blurred -- we want to make sure people cannot be identified when this one
 # shows
 
-import math
 import cv2
 import looper
 import numpy

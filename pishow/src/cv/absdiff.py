@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""absdiff.py"""
 
 import cv2
 import looper

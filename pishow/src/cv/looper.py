@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Main loop and command line argument parsing and image display with FPS"""
+"""looper.py"""
+
+# Main loop and command line argument parsing and image display with FPS
 
 import sys
 import urllib
