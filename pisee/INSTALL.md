@@ -4,7 +4,7 @@
 generic way possible. Download the image [here](https://www.raspberrypi.org/downloads/raspbian/) and follow instructions [here](https://www.raspberrypi.org/documentation/installation/installing-images/README.md).
 2) This step is optional but recommended - format the SD card when you first get it out of the packaging - that's because the formatting process checks and marks bad blocks and those SD cards do have them sometimes.
 3) On OS X, you can use `etcher` to write the OS image to the micro-sd card.
-NOTE: despite what the installation instructions tell you (to unzip the zip file before using etcher), do not unzip the zip file. Instead, when etcher asks what you want to etch (where is the image file) just load up the zip file you've downloaded and it will be burned onto the sd-card.
+NOTE: do not unzip the zip file. Instead, when etcher asks what you want to etch (where is the image file) just load up the zip file you've downloaded and it will be burned onto the sd-card.
 4) Upgrade and update packages. Insert micro-sd card into board and boot it,
 start a shell and type 
     ```
