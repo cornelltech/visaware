@@ -16,7 +16,7 @@ class AvgFrames:
 
     def __init__(self):
         """constructor"""
-        self.alpha = 0.1
+        self.alpha = 0.01
         self.frame = None
 
     def apply(self, frame):
