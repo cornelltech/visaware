@@ -25,31 +25,26 @@
    ```
    Choose "Generic 104 key" for most US keyboards.  Choose US keyboard next -
    pick the default one (top of the list).
-8) Change the keyboard to a US keyboard (because by default the board comes
-   with a UK keyboard). Type
-    ```
-    sudo dpkg-reconfigure keyboard-configuration
-    ```
-9) Fix the clock to have the correct time zone via
+8) Fix the clock to have the correct time zone via
    ```
    sudo dpkg-reconfigure tzdata
    ```
-10) Configure the board with
-    ```
-    sudo raspi-config
-    ```
-    Here we want to
-    * Enable the camera
-    * Set the board's hostname to `pysee`
-    * Set password for user `pi`
-11) Create two directories under `/home/pi`: 
+9) Configure the board with
+   ```
+   sudo raspi-config
+   ```
+   Here we want to
+   * Enable the camera
+   * Set the board's hostname to `pysee`
+   * Set password for user `pi`
+10) Create two directories under `/home/pi`: 
 
     File or directory name | Purpose
     ---------------------- | -------
     bin/                   | Scripts that user `pi` may want to run
     workspace/             | Software that user `pi` may want to build
 
-12) Build `mjpg-streamer` in  a subdirectory of 'workspace/', using this
+11) Build `mjpg-streamer` in  a subdirectory of 'workspace/', using this
     experimental (raspicam) version: 
     [https://github.com/jacksonliam/mjpg-streamer/](https://github.com/jacksonliam/mjpg-streamer/). 
     Build this all the way up to and including the command
@@ -58,14 +53,14 @@
     ```
     which will place installed files under `/usr/local/`
 
-13) In `bin/` we currently have the script that is responsible for running the
+12) In `bin/` we currently have the script that is responsible for running the
     `mjpg-streamer` executable you've built in the previous step. This script is
     where we set the command-line arguments we run `mjpeg-streamer` with. 
     Currently it runs the following code:
     ```
     mjpg_streamer -i "input_raspicam.so -x 640 -y 480 -fps 30 -br 90 -co 100 -ifx watercolour" -o "output_http.so -w ./www"
     ```
-14) Set up the machine for automatically starting mjpeg-streamer upon boot 
+13) Set up the machine for automatically starting mjpeg-streamer upon boot 
     (headless or not).  For this just add the following line to `/etc/rc.local`:
     ```
     /home/pi/bin/run_mjpg_streamer.sh > /dev/null 2>&1
