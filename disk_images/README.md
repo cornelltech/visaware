@@ -2,8 +2,10 @@
 
 SD-Card images of pisee/pishow Linux root partitions
 
-NOTE: The images here are the partitions of `pisee` and `pishow` Raspberry Pi
-boards - bit by bit copies, made by the following process:
+### Notes
+
+The images here are the partitions of `pisee` and `pishow` Raspberry Pi
+boards - bit by bit copies, made by the following process (TODO: UPDATE THIS):
 
 * Ran the Mac's Applications --> Utilities --> Disk Utility
 * Only backed up the partition that has data, not the free space, there
@@ -12,7 +14,7 @@ boards - bit by bit copies, made by the following process:
   only what shows up inside of it was backed up - that's the partition that
   has the data.
 
-### Commands that help:
+#### Commands that help:
 * On linux use `dmg2img` to convert a dmg file to an img file 
 * You can mount the img file as follows:
   * Say your `.img` file is named `FILE.img`
