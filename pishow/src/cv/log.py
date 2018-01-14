@@ -12,7 +12,7 @@ import numpy
 import gray
 
 
-LOG_FACTOR = 2
+LOG_FACTOR = 5
 
 class Log:
     """log a frame"""

@@ -50,40 +50,37 @@
     ---------------------- | -------
     `bin/`                 | Scripts that user `pi` may want to run
     `workspace/`           | Software that user `pi` may want to build
+12) Grab the visaware repository:
+    ```
+    cd /home/pi/workspace
+    git clone https://github.com/cornelltech/visaware
+    ```
 12) On `pisee` boards (ones with a camera) you will need `mjpeg_streamer` - 
-    here is how you build it: Build `mjpg-streamer` in  a subdirectory of 
-    `workspace/`, using this experimental (raspicam) version: 
-    [https://github.com/jacksonliam/mjpg-streamer/](https://github.com/jacksonliam/mjpg-streamer/). 
-    Use the instructions at the root of the github repository 
-    (a la README.md file there). NOTE: use the `cmake` version of the build
-    instructions, i.e, build via `cmake` first. Here's a transcript:
-    ```
-    sudo ap install cmake libjpeg8-dev
-    cd /home/pi/workspace/
-    git clone https://github.com/jacksonliam/mjpg-streamer
-    cd mjpg-streamer/mjpg-streamer-experimental
-    mkdir _build
-    cd _build
-    export LD_LIBRARY_PATH=.
-    cmake ..
-    make
-    sudo make install
-    ```
-    which will place installed executable under `/usr/local/mjpg_streamer`
-13) Build `mjpg-streamer` in  a subdirectory of 'workspace/', using this
-    experimental (raspicam) version: 
-    [https://github.com/jacksonliam/mjpg-streamer/](https://github.com/jacksonliam/mjpg-streamer/) - which you clone and build
-    based on the following transcript:
-    ```
-    git clone https://github.com/jacksonliam/mjpg-streamer
-    cd mjpg-streamer/mjpg-streamer-experimental
-    export LD_LIBRARY_PATH=.
-    sudo make install
-    ```
-    which will place installed files under `/usr/local/`
-14) In `bin/` we currently have the script that is responsible for running the
-    `mjpg-streamer` executable you've built in the previous step. This script is
-    where we set the command-line arguments we run `mjpeg-streamer` with. 
+    here is how you build it: 
+    * Build `mjpg-streamer` in  a subdirectory of 
+      `workspace/`, using this experimental (raspicam) version: 
+      [https://github.com/jacksonliam/mjpg-streamer/](https://github.com/jacksonliam/mjpg-streamer/). 
+      Use the instructions at the root of the github repository 
+      (a la README.md file there). NOTE: use the `cmake` version of the build
+      instructions, i.e, build via `cmake` first. Here's a transcript:
+      ```
+      sudo ap install cmake libjpeg8-dev
+      cd /home/pi/workspace/
+      git clone https://github.com/jacksonliam/mjpg-streamer
+      cd mjpg-streamer/mjpg-streamer-experimental
+      mkdir _build
+      cd _build
+      export LD_LIBRARY_PATH=.
+      cmake ..
+      make
+      sudo make install
+      ```
+      which will place installed executable under `/usr/local/mjpg_streamer`
+    * Link the wrapper script `run_mjpeg_streamer.sh`, where we set the
+      command-line arguments we run `mjpeg-streamer` with, by issuing:
+      ```
+      ln -s /home/pi/workspace/visaware/pisee/src/run_mjpg_streamer.sh /home/pi/bin/
+      ```
 13) Set up the machine for automatically starting mjpeg-streamer upon boot 
     (headless or not).  For this just add the following line to `/etc/rc.local`:
     ```
