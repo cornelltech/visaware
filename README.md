@@ -5,7 +5,7 @@ experiments.
 
 ## System spects
 This section contains some quick info about how the system is set up.
-![alt text](https://raw.githubusercontent.com/cornelltech/visaware/master/doc/ip_numbers.png)
+![alt text](https://raw.githubusercontent.com/cornelltech/visaware/master/doc/ip_layout.png)
 
 ## Contents
 
