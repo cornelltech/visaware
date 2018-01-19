@@ -79,6 +79,7 @@ class ModuleTests(unittest.TestCase):
             frame = videoStream.read()
             if frame is not None:
                 cv2.imshow('Frame', videoStream.frame)
+                cv2.waitKey(1) & 0xFF
                 fps.update()
 
         fps.stop()
