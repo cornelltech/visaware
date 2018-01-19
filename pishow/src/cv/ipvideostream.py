@@ -14,10 +14,11 @@ import numpy
 BUFFER_LENGTH = 1024
 JPEG_START_MARKER = '\xff\xd8'
 JPEG_END_MARKER = '\xff\xd9'
-N_TEST_FRAMES = 300
+N_TEST_FRAMES = 1000
 TEST_URL = 'http://128.84.84.129:8080/?action=stream'
 
 class IpVideoStream:
+    """Like WebcamVideoStream of imutils.video but for IP cams"""
     def __init__(self, url):
         self.stream = urllib.urlopen(url)
         self.buffer = self.stream.read(BUFFER_LENGTH)
@@ -40,28 +41,28 @@ class IpVideoStream:
                 numpy.fromstring(jpg, dtype=numpy.uint8), 1)
 
     def start(self):
-	# start the thread to read frames from the video stream
-	thread = Thread(target=self.update, args=())
-	thread.daemon = True
-	thread.start()
-	return self
+        # start the thread to read frames from the video stream
+        thread = Thread(target=self.update, args=())
+        thread.daemon = True
+        thread.start()
+        return self
 
     def update(self):
-	# keep looping infinitely until the thread is stopped
-	while True:
+        # keep looping infinitely until the thread is stopped
+        while True:
             self.buffer += self.stream.read(BUFFER_LENGTH)
             self.buf2frame()
 
-	    # if the thread indicator variable is set, stop the thread
-	    if self.stopped:
-		return
+        # if the thread indicator variable is set, stop the thread
+        if self.stopped:
+            return
 
     def read(self):
-	# return the frame most recently read
-	return self.frame
+        # return the frame most recently read
+        return self.frame
 
     def stop(self):
-	# indicate that the thread should be stopped
+        # indicate that the thread should be stopped
         self.stopped = True
 
 class ModuleTests(unittest.TestCase):
