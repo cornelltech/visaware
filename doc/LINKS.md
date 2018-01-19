@@ -20,6 +20,7 @@ Here is where we share any links that are relevant to our work on this project.
 #### CV Processing
 * [Background subtraction](https://docs.opencv.org/3.1.0/db/d5c/tutorial_py_bg_subtraction.html) - using `BackgroundSubtractorMOG2`
 * [FPS python code](https://www.learnopencv.com/how-to-find-frame-rate-or-frames-per-second-fps-in-opencv-python-cpp/)
+* [Arnaud's pointer for increasing FPS via THREADING](https://www.pyimagesearch.com/2015/12/21/increasing-webcam-fps-with-python-and-opencv/)
 
 #### System setup related
 * [SD card images](https://softwarebakery.com/shrinking-images-on-linux)
