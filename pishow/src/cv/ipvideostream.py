@@ -14,6 +14,7 @@ import numpy
 BUFFER_LENGTH = 1024
 JPEG_START_MARKER = '\xff\xd8'
 JPEG_END_MARKER = '\xff\xd9'
+N_TEST_FRAMES = 300
 TEST_URL = 'http://128.84.84.129:8080/?action=stream'
 
 class IpVideoStream:
@@ -75,7 +76,7 @@ class ModuleTests(unittest.TestCase):
         videoStream = IpVideoStream(TEST_URL).start()
         fps = FPS().start()
 
-        while fps._numFrames < 3000:
+        while fps._numFrames < N_TEST_FRAMES:
             frame = videoStream.read()
             if frame is not None:
                 cv2.imshow('Frame', videoStream.frame)
