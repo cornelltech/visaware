@@ -3,6 +3,19 @@
 This directory contains all files, code, notes and documentation related to the 
 the Raspberry Pi board showing/displaying/projecting the video.
 
+## Throughput (FPS) experiments
+Some benchmarking experiments with various setups:
+
+We tried various setups to speed up frames per second.
+
+Show CPU | See CPU | FPS (no processing) | FPS (with processing)
+-------- | -------------- | ------------------- | ---------------------
+PC laptop | PC laptop built in Camera | 30 | 30
+PC laptop | Pisee | 5 | 4.9
+Mac Mini | Pisee | 0.57 | 0.56
+Pishow | Pisee | 4 | 3.5
+
+
 ## Contents
 File or directory name | Purpose
 ---------------------- | -------
