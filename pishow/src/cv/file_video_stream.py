@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""filevideostream.py"""
+"""file_video_stream.py"""
 
 import unittest
 from threading import Thread

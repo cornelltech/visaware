@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""webcamvideostream.py"""
+"""webcam_video_stream.py"""
 
 # import the necessary packages
 import unittest

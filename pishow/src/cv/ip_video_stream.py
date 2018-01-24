@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""ipvideostream.py"""
+"""ip_video_stream.py"""
 
 # import the necessary packages
 import urllib

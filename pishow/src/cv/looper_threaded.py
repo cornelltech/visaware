@@ -8,9 +8,9 @@ import urllib
 import time
 import numpy
 import cv2
-from filevideostream import FileVideoStream
-from ipvideostream import IpVideoStream
-from webcamvideostream import WebcamVideoStream
+from file_video_stream import FileVideoStream
+from ip_video_stream import IpVideoStream
+from webcam_video_stream import WebcamVideoStream
 
 # constants for fps display overlayed on the (640px x 480px) image
 FONT_LOCATION = (550, 460)
