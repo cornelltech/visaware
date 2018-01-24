@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" fps.py """
+"""fps.py"""
 
 # import the necessary packages
 

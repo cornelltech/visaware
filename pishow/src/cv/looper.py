@@ -88,7 +88,7 @@ def loop_url(effect, url):
             if effect:
                 processed_frame = effect.apply(frame)
             end_time = time.time()
-            show_image_w_fps(processed_frame, 1/(end_time-start_time))
+            show_image_w_fps(processed_frame, 1.0/(end_time-start_time))
             start_time = end_time
 
         # listen to quit keystroke

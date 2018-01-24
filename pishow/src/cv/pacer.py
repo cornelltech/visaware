@@ -28,12 +28,11 @@ class Pacer:
         blockSeconds = self.desiredPeriod-elapsed+self.timeErrorCorrection
 
         if blockSeconds > 0:
-            print "Sleeping {:.2}".format(blockSeconds)
+            # print "Sleeping {:.2}".format(blockSeconds)
             time.sleep(blockSeconds)
-        else:
-            # we slept too much perhaps, next time sleep less
-
-            print "NOT Sleeping {:.2}".format(blockSeconds)
+        # else:
+        #   # we slept too much perhaps, next time sleep less
+        #   # print "NOT Sleeping {:.2}".format(blockSeconds)
 
         self.timeErrorCorrection = blockSeconds
         self.lastIterationTime = now

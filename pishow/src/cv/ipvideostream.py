@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" ipvideostream.py """
+"""ipvideostream.py"""
 
 # import the necessary packages
 import urllib
@@ -15,9 +15,6 @@ import numpy
 BUFFER_LENGTH = 1024
 JPEG_START_MARKER = '\xff\xd8'
 JPEG_END_MARKER = '\xff\xd9'
-N_TEST_FRAMES = 1000
-# TEST_URL = 'http://128.84.84.129:8080/?action=stream'
-TEST_URL = 'http://128.84.84.149:8080/?action=stream'
 
 class IpVideoStream:
     """Like WebcamVideoStream of imutils.video but for IP cams"""
@@ -50,14 +47,14 @@ class IpVideoStream:
         return self
 
     def update(self):
+        # if the thread indicator variable is set, stop the thread
+        if self.stopped:
+            return
+
         # keep looping infinitely until the thread is stopped
         while True:
             self.buffer += self.stream.read(BUFFER_LENGTH)
             self.buf2frame()
-
-        # if the thread indicator variable is set, stop the thread
-        if self.stopped:
-            return
 
     def read(self):
         # return the frame most recently read
@@ -68,28 +65,29 @@ class IpVideoStream:
         self.stopped = True
 
 class ModuleTests(unittest.TestCase):
-    """
-    module tests
-    """
+    """module tests"""
     @staticmethod
     def test01():
-        """
-        can we do this?
-        """
+        """can we do this?"""
         videoStream = IpVideoStream(TEST_URL).start()
         fps = FPS().start()
 
         while fps.nFrames < N_TEST_FRAMES:
             frame = videoStream.read()
             if frame is not None:
-                cv2.imshow('Frame', videoStream.frame)
+                cv2.imshow('Frame', frame)
                 cv2.waitKey(1) & 0xFF
                 fps.update()
 
         fps.stop()
+        videoStream.stop()
         print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
         print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
 
 if __name__ == "__main__":
+    # TEST_URL = 'http://128.84.84.129:8080/?action=stream'
+    TEST_URL = 'http://128.84.84.149:8080/?action=stream'
+    N_TEST_FRAMES = 1000
+
     unittest.main()
