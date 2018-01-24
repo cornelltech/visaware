@@ -8,6 +8,7 @@ import urllib
 import time
 import numpy
 import cv2
+from fps import FPS
 from file_video_stream import FileVideoStream
 from ip_video_stream import IpVideoStream
 from webcam_video_stream import WebcamVideoStream
@@ -28,7 +29,7 @@ def parse_command_line(effect):
     usage_message = "Usage: %s [<url>|<file-path>]\n" % progname
     n_args = len(sys.argv)-1
     if n_args == 0:
-        return lambda: loop_camera(effect)
+        return lambda: loop_webcam(effect)
     elif n_args == 1:
         arg = sys.argv[1]
         if arg == "-h" or arg == "--help":
@@ -37,22 +38,37 @@ def parse_command_line(effect):
         elif arg[0:4] == "http":
             return lambda: loop_url(effect, arg)
         else:
-            return lambda: loop_camera_or_file(effect, arg)
+            return lambda: loop_webcam_or_file(effect, arg)
     else:
         print usage_message
         raise Exception("Only one argument allowed, you gave %d" % n_args)
 
-def loop_camera(effect):
-    """Loop camera"""
-    print "loop_camera()"
+def generic_looper(stream):
+    """same loop code for any stream"""
+    fps = FPS().start()
+    while True:
+        frame = videoStream.read()
+        print 'frame is none!'
+        break;
+    
+        cv2.imshow('Frame', effect(frame))
+        fps.update()
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+def loop_webcam(effect):
+    """Loop webcam"""
+    print "loop_webcam()"
+    generic_looper(WebcamVideoStream().start())
 
 def loop_file(effect, fileName):
-    """Loop camera"""
+    """Loop video file"""
     print "loop_file(%s)" % fileName
 
 def loop_url(effect, url):
     """Loop url"""
-    print "loop_url(\"%s\")" % url
+    print "loop_url(%s)" % url
 
 
 if __name__ == "__main__":
