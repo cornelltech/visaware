@@ -41,12 +41,12 @@ class IpVideoStream:
 
     def start(self):
         # start the thread to read frames from the video stream
-        thread = Thread(target=self.update, args=())
+        thread = Thread(target=self.main_loop, args=())
         thread.daemon = True
         thread.start()
         return self
 
-    def update(self):
+    def main_loop(self):
         # if the thread indicator variable is set, stop the thread
         if self.stopped:
             return

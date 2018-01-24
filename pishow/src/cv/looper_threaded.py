@@ -61,7 +61,6 @@ def generic_looper(videoStream, effect):
 
     # clean up at the end
     fps.stop()
-    pacer.stop()
     videoStream.stop()
 
 def loop_webcam(effect):

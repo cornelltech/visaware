@@ -22,12 +22,12 @@ class WebcamVideoStream:
 
     def start(self):
         # start the thread to read frames from the video stream
-        t = Thread(target=self.update, args=())
+        t = Thread(target=self.main_loop, args=())
         t.daemon = True
         t.start()
         return self
 
-    def update(self):
+    def main_loop(self):
         # keep looping infinitely until the thread is stopped
         while True:
             # if the thread indicator variable is set, stop the thread
@@ -52,6 +52,7 @@ class ModuleTests(unittest.TestCase):
         """can we do this?"""
         videoStream = WebcamVideoStream().start()
         fps = FPS().start()
+        pacer = Pacer(DESIRED_FPS).start()
 
         while fps.nFrames < N_TEST_FRAMES:
             frame = videoStream.read()
@@ -61,6 +62,7 @@ class ModuleTests(unittest.TestCase):
         
             cv2.imshow('Frame', frame)
             fps.update()
+            pacer.update()
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -73,5 +75,7 @@ class ModuleTests(unittest.TestCase):
 
 if __name__ == "__main__":
     N_TEST_FRAMES = 100000
+    DESIRED_FPS = 30
+
     unittest.main()
         

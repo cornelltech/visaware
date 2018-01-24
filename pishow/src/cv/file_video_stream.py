@@ -9,7 +9,8 @@ import cv2
 from fps import FPS
 from pacer import Pacer
 
-DEFAULT_QUEUE_SIZE = 128
+# DEFAULT_QUEUE_SIZE = 128
+DEFAULT_QUEUE_SIZE = 1024
 
 # import the Queue class from Python 3
 if sys.version_info >= (3, 0):
@@ -32,12 +33,12 @@ class FileVideoStream:
 
     def start(self):
         # start a thread to read frames from the file video stream
-        thread = Thread(target=self.update, args=())
+        thread = Thread(target=self.main_loop, args=())
         thread.daemon = True
         thread.start()
         return self
 
-    def update(self):
+    def main_loop(self):
         # keep looping infinitely
         while True:
             # if the thread indicator variable is set, stop the
@@ -53,11 +54,14 @@ class FileVideoStream:
                 # if the `grabbed` boolean is `False`, then we have
                 # reached the end of the video file
                 if not grabbed:
+                    print 'done grabbing!'
                     self.stop()
                     return
 
                 # add the frame to the queue
                 self.queue.put(frame)
+            else:
+                print '[WARN] queue is full!'
 
     def read(self):
         # return next frame in the queue
