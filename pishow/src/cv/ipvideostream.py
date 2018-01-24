@@ -79,7 +79,7 @@ class ModuleTests(unittest.TestCase):
         videoStream = IpVideoStream(TEST_URL).start()
         fps = FPS().start()
 
-        while fps._numFrames < N_TEST_FRAMES:
+        while fps.nFrames < N_TEST_FRAMES:
             frame = videoStream.read()
             if frame is not None:
                 cv2.imshow('Frame', videoStream.frame)
