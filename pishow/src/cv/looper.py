@@ -14,9 +14,9 @@ from ip_video_stream import IpVideoStream
 from webcam_video_stream import WebcamVideoStream
 from pacer import Pacer
 
+
 # we run everything at a constant FPS for sanity, even if can do faster
 NORMALIZED_FPS = 30
-
 
 def parse_command_line(effect):
     """Process command line arguments"""
