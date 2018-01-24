@@ -6,7 +6,8 @@ import urllib
 import unittest
 from threading import Thread
 import cv2
-from imutils.video import FPS
+# from imutils.video import FPS
+from fps import FPS
 import numpy
 
 
@@ -15,7 +16,8 @@ BUFFER_LENGTH = 1024
 JPEG_START_MARKER = '\xff\xd8'
 JPEG_END_MARKER = '\xff\xd9'
 N_TEST_FRAMES = 1000
-TEST_URL = 'http://128.84.84.129:8080/?action=stream'
+# TEST_URL = 'http://128.84.84.129:8080/?action=stream'
+TEST_URL = 'http://128.84.84.149:8080/?action=stream'
 
 class IpVideoStream:
     """Like WebcamVideoStream of imutils.video but for IP cams"""
