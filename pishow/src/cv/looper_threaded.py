@@ -45,19 +45,17 @@ def generic_looper(videoStream, effect):
 
     while True:
         frame = videoStream.read()
-        if frame is None:
-            print 'frame is none!'
-            break;
     
-        if effect:
-            frame = effect(frame)
+        if frame is not None and effect:
+            frame = effect.apply(frame)
 
-        cv2.imshow('Frame', frame)
-        fps.update()
-        pacer.update()
+            cv2.imshow('Frame', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        fps.update()
+        pacer.update()
 
     # clean up at the end
     fps.stop()

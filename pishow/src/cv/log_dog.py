@@ -7,7 +7,8 @@
 
 import math
 import cv2
-import looper
+# import looper
+import looper_threaded
 import numpy
 import log
 
@@ -31,5 +32,5 @@ class LogDog:
 
 
 if __name__ == '__main__':
-    (looper.parse_command_line(LogDog()))()
+    (looper_threaded.parse_command_line(LogDog()))()
     cv2.destroyAllWindows()
