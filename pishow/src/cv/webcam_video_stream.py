@@ -72,6 +72,6 @@ class ModuleTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    N_TEST_FRAMES = 1000
+    N_TEST_FRAMES = 100000
     unittest.main()
         
