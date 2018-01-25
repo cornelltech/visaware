@@ -7,3 +7,5 @@ No order of importance, just a place to jot down a wish list of TODO items.
 * FPS:
   a) if fps supplied is 0 it means go as fast as you can
   b) DRY it
+* counting frames would allow you to do the last frame comparison very
+  efficiently, do it

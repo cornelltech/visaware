@@ -9,6 +9,7 @@ import time
 import cv2
 # from fps import FPS
 # import file_video_stream as fvs
+import video_stream_base as base
 from ip_video_stream import IpVideoStream
 from webcam_video_stream import WebcamVideoStream
 from file_video_stream import FileVideoStream
@@ -24,16 +25,18 @@ def parse_command_line(effect):
     usage_message = "Usage: %s [<url>|<file-path>]\n" % progname
     n_args = len(sys.argv)-1
     if n_args == 0:
-        return lambda: generic_looper(WebcamVideoStream().start(), effect)
+        return lambda: base.VideoStreamBase.generic_looper(
+            WebcamVideoStream().start(), effect)
     elif n_args == 1:
         arg = sys.argv[1]
         if arg == "-h" or arg == "--help":
             print usage_message
             sys.exit(0)
         elif arg[0:4] == "http":
-            return lambda: generic_looper(IpVideoStream(arg).start(), effect)
+            return lambda: base.VideoStreamBase.generic_looper(
+                IpVideoStream(arg).start(), effect)
         else:
-            return lambda: generic_looper(
+            return lambda: base.VideoStreamBase.generic_looper(
                 FileVideoStream(arg, NORMALIZED_FPS).start(), effect)
     else:
         print usage_message
