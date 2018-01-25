@@ -18,7 +18,6 @@ class IpVideoStream(base.VideoStreamBase):
     def __init__(self, url, fps=base.DEFAULT_FPS):
         """constructor"""
         super(IpVideoStream, self).__init__(fps)
-        print url
         self.stream = urllib.urlopen(url)
         self.buffer = ''
 
