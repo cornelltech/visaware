@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """webcam_video_stream.py"""
 
-# import the necessary packages
 import unittest
 import cv2
 import video_stream_base as base
@@ -9,7 +8,6 @@ import looper
 
 
 class WebcamVideoStream(base.VideoStreamBase):
-
     def __init__(self, src=0, fps=base.DEFAULT_FPS):
         super(WebcamVideoStream, self).__init__(fps)
         self.stream = cv2.VideoCapture(src)

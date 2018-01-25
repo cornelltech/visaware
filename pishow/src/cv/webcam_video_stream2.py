@@ -8,7 +8,6 @@ import looper
 
 
 class WebcamVideoStream(base.VideoStreamBase):
-
     def __init__(self, src=0, fps=base.DEFAULT_FPS):
         super(WebcamVideoStream, self).__init__(fps)
         self.stream = cv2.VideoCapture(src)

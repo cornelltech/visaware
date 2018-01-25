@@ -10,7 +10,6 @@ import looper
 
 
 class FileVideoStream(base.VideoStreamBase):
-
     def __init__(self, path, fps=base.DEFAULT_FPS):
         super(FileVideoStream, self).__init__(fps)
         self.stream = cv2.VideoCapture(path)
