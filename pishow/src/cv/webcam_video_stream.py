@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """webcam_video_stream.py"""
 
-import unittest
 import cv2
+import unittest
 import video_stream_base as base
 
 
