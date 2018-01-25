@@ -15,6 +15,18 @@ PC laptop | Pisee | 5 | 4.9
 Mac Mini | Pisee | 0.57 | 0.56
 Pishow | Pisee | 4 | 3.5
 
+### FPS issues solved
+Arnaud pointed us to the solution: use multi-threading.
+
+Show CPU | See CPU | FPS (no processing) | FPS (with processing)
+-------- | -------------- | ------------------- | ---------------------
+PC laptop | PC laptop built in Camera | 30 | 30
+PC laptop | Pisee | 5 | 4.9
+Mac Mini | Pisee | 0.57 | 0.56
+Pishow | Pisee | 4 | 3.5
+
+
+
 
 ## Contents
 File or directory name | Purpose
