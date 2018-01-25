@@ -42,5 +42,5 @@ class ModuleTests(unittest.TestCase):
               
 
 if __name__ == "__main__":
-    TEST_URL = 'http://128.84.84.129:8080/?action=stream'
+    TEST_URL = 'http://128.84.84.149:8080/?action=stream'
     unittest.main()
