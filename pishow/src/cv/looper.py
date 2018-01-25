@@ -11,6 +11,7 @@ import cv2
 from fps import FPS
 import file_video_stream as fvs
 from ip_video_stream import IpVideoStream
+
 from webcam_video_stream import WebcamVideoStream
 from pacer import Pacer
 
@@ -65,8 +66,8 @@ def generic_looper(videoStream, effect=None):
     videoStream.stop()
     print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
     print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
-
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     (parse_command_line(None))()
-    cv2.destroyAllWindows()
+
