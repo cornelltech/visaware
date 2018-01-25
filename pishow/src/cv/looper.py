@@ -7,10 +7,11 @@ import sys
 import urllib
 import time
 import cv2
-from fps import FPS
-import file_video_stream as fvs
+# from fps import FPS
+# import file_video_stream as fvs
 from ip_video_stream import IpVideoStream
 from webcam_video_stream import WebcamVideoStream
+from file_video_stream import FileVideoStream
 from pacer import Pacer
 
 
@@ -33,36 +34,11 @@ def parse_command_line(effect):
             return lambda: generic_looper(IpVideoStream(arg).start(), effect)
         else:
             return lambda: generic_looper(
-                fvs.FileVideoStream(arg, NORMALIZED_FPS).start(), effect)
+                FileVideoStream(arg, NORMALIZED_FPS).start(), effect)
     else:
         print usage_message
         raise Exception("Only one argument allowed, you gave %d" % n_args)
 
-def generic_looper(videoStream, effect=None):
-    """same loop code for any stream"""
-    fps = FPS().start()
-    pacer = Pacer(NORMALIZED_FPS).start()
-
-    while True:
-        frame = videoStream.read()
-
-        if frame is not None and not videoStream.stopped:
-            if effect is not None:
-                frame = effect.apply(frame)    
-            cv2.imshow('Frame', frame)
-            fps.update()
-
-        if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-        pacer.update()
-
-    # clean up at the end
-    fps.stop()
-    videoStream.stop()
-    print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-    print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
-    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     (parse_command_line(None))()

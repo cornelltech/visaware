@@ -2,6 +2,8 @@
 
 import abc
 import unittest
+import cv2
+from fps import FPS
 from threading import Thread
 from pacer import Pacer
 
@@ -56,3 +58,30 @@ class VideoStreamBase:
     def stop(self):
         # indicate that the thread should be stopped
         self.stopped = True
+
+    @staticmethod
+    def generic_looper(videoStream, effect=None):
+        """same loop code for any stream"""
+        fps = FPS().start()
+        pacer = Pacer(DEFAULT_FPS).start()
+
+        while True:
+            frame = videoStream.read()
+
+            if frame is not None and not videoStream.stopped:
+                if effect is not None:
+                    frame = effect.apply(frame)    
+                cv2.imshow('Frame', frame)
+                fps.update()
+                
+            if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+            pacer.update()
+
+        # clean up at the end
+        fps.stop()
+        videoStream.stop()
+        print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
+        print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+        cv2.destroyAllWindows()

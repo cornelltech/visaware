@@ -4,7 +4,6 @@
 import unittest
 import cv2
 import video_stream_base as base
-import looper
 
 
 class WebcamVideoStream(base.VideoStreamBase):
@@ -27,7 +26,7 @@ class ModuleTests(unittest.TestCase):
     @staticmethod
     def test01():
         """can we do this?"""
-        looper.generic_looper(WebcamVideoStream().start())
+        base.VideoStreamBase.generic_looper(WebcamVideoStream().start())
               
 
 if __name__ == "__main__":
