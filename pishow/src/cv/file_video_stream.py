@@ -8,6 +8,7 @@ import unittest
 from threading import Thread
 from fps import FPS
 from pacer import Pacer
+import looper
 
 
 DEFAULT_FPS = 30
@@ -16,7 +17,7 @@ class FileVideoStream:
     def __init__(self, path, fps=DEFAULT_FPS):
         # initialize the file video stream along with the boolean
         # used to indicate if the thread should be stopped or not
-        print path
+        self.fps = fps
         self.stream = cv2.VideoCapture(path)
         self.pacer = Pacer(fps)
         self.stopped = False
@@ -32,7 +33,6 @@ class FileVideoStream:
 
     def main_thread(self):
         # keep looping infinitely
-        i = 0
         while True:
             # read the next frame from the file
             (grabbed, frame) = self.stream.read()
@@ -44,8 +44,8 @@ class FileVideoStream:
                 self.stop()
                 return
 
-            self.pacer.update()
-            i += 1
+            if self.fps:
+                self.pacer.update()
 
     def read(self):
         if self.stopped:
@@ -61,27 +61,9 @@ class ModuleTests(unittest.TestCase):
     @staticmethod
     def test01():
         """can we do this?"""
-        videoStream = FileVideoStream(TEST_FILE).start()
-        fps = FPS().start()
-
-        lastFrame = None
-        while True:
-            frame = videoStream.read()
-            if not numpy.array_equal(frame, lastFrame) and frame is not None:
-                cv2.imshow('Frame', frame)
-                fps.update()
-
-            if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-            lastFrame = frame
-
-        fps.stop()
-        videoStream.stop()
-        print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-        print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+        looper.generic_looper(FileVideoStream(TEST_FILE).start())
 
 
 if __name__ == "__main__":
-    TEST_FILE = "../../../data/vid01.mov"
+    TEST_FILE = "../../../data/vid02.mov"
     unittest.main()

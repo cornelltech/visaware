@@ -39,7 +39,7 @@ def parse_command_line(effect):
         print usage_message
         raise Exception("Only one argument allowed, you gave %d" % n_args)
 
-def generic_looper(videoStream, effect):
+def generic_looper(videoStream, effect=None):
     """same loop code for any stream"""
     fps = FPS().start()
     pacer = Pacer(NORMALIZED_FPS).start()

@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 """ip_video_stream.py"""
 
-# import the necessary packages
 import urllib
 import unittest
 from threading import Thread
 import cv2
-# from imutils.video import FPS
 from fps import FPS
 import numpy
 
@@ -41,12 +39,12 @@ class IpVideoStream:
 
     def start(self):
         # start the thread to read frames from the video stream
-        thread = Thread(target=self.main_loop, args=())
+        thread = Thread(target=self.main_thread, args=())
         thread.daemon = True
         thread.start()
         return self
 
-    def main_loop(self):
+    def main_thread(self):
         # if the thread indicator variable is set, stop the thread
         if self.stopped:
             return
