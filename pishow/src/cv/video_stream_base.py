@@ -21,20 +21,22 @@ class VideoStreamBase:
         # used to indicate if the thread should be stopped or not
         self.fps = fps
         self.pacer = Pacer(fps)
-        self.stopped = False
+        self.stopped = True
         self.stream = None
         self.frame = None
 
     def start(self):
         # start a thread to read frames from the file video stream
-
         if self.stream is None:
             raise Exception("Cannot start thread - stream is None")
-
+        if not self.stopped:
+            raise Exception("Cannot start thread - a thread is already running")
+        self.stopped = False
         thread = Thread(target=self.main_thread, args=())
         thread.daemon = True
         thread.start()
         self.pacer.start()
+
         return self
 
     @abc.abstractmethod
