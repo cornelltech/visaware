@@ -8,7 +8,7 @@ import unittest
 from threading import Thread
 from fps import FPS
 from pacer import Pacer
-import looper
+# import looper
 
 
 DEFAULT_FPS = 30
@@ -61,8 +61,8 @@ class ModuleTests(unittest.TestCase):
     @staticmethod
     def test01():
         """can we do this?"""
-        looper.generic_looper(FileVideoStream(TEST_FILE).start())
-
+        # looper.generic_looper(FileVideoStream(TEST_FILE).start())
+        
 
 if __name__ == "__main__":
     TEST_FILE = "../../../data/vid02.mov"

@@ -48,7 +48,7 @@ def generic_looper(videoStream, effect=None):
     while True:
         # print 'pre'
         frame = videoStream.read()
-        if not numpy.array_equal(frame, lastFrame) and frame is not None:
+        if not numpy.array_equal(frame, lastFrame) and not videoStream.stopped:
             if effect is not None:
                 frame = effect.apply(frame)    
             cv2.imshow('Frame', frame)
