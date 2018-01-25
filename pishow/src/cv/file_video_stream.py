@@ -5,7 +5,6 @@ import sys
 import cv2
 import numpy
 import unittest
-from pacer import Pacer
 import video_stream_base as base
 import looper
 
