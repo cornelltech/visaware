@@ -8,7 +8,7 @@ import numpy
 
 
 class AbsDiff:
-    """average frames"""
+    """absolute value of (current_frame - previous_frame)"""
 
     def __init__(self):
         """constructor"""
