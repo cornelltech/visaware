@@ -106,3 +106,5 @@ OLD
 pishow.gz
 pisee.gz
 tmp/
+.#*
+#*
