@@ -9,12 +9,12 @@ import unittest
 from threading import Thread
 from fps import FPS
 from pacer import Pacer
-import looper
+# import looper
 
 
 DEFAULT_FPS = 30
 
-class FileVideoStream:
+class VideoStreamBase:
     """
     """
     __metaclass__ = abc.ABCMeta
@@ -23,13 +23,17 @@ class FileVideoStream:
         # initialize the file video stream along with the boolean
         # used to indicate if the thread should be stopped or not
         self.fps = fps
-        # self.stream = 
         self.pacer = Pacer(fps)
         self.stopped = False
+        self.stream = None
         self.frame = None
 
     def start(self):
         # start a thread to read frames from the file video stream
+
+        if self.stream is None:
+            raise Exception("Cannot start thread - stream is None")
+
         thread = Thread(target=self.main_thread, args=())
         thread.daemon = True
         thread.start()
@@ -68,7 +72,7 @@ class ModuleTests(unittest.TestCase):
     @staticmethod
     def test01():
         """can we do this?"""
-        looper.generic_looper(FileVideoStream(TEST_FILE).start())
+        # looper.generic_looper(FileVideoStream(TEST_FILE).start())
 
 
 if __name__ == "__main__":

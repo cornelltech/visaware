@@ -46,7 +46,6 @@ def generic_looper(videoStream, effect=None):
 
     lastFrame = None
     while True:
-        # print 'pre'
         frame = videoStream.read()
         if not numpy.array_equal(frame, lastFrame) and not videoStream.stopped:
             if effect is not None:
