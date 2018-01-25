@@ -1,9 +1,6 @@
 """video_stream_base.py"""
 
 import abc
-import sys
-import cv2
-import numpy
 import unittest
 from threading import Thread
 from pacer import Pacer
@@ -36,7 +33,6 @@ class VideoStreamBase:
         thread.daemon = True
         thread.start()
         self.pacer.start()
-
         return self
 
     @abc.abstractmethod
@@ -51,7 +47,7 @@ class VideoStreamBase:
 
             self.loop_body()
 
-            if self.fps != 0:
+            if self.fps:
                 self.pacer.update()
 
     def read(self):

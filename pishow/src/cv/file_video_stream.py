@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 """file_video_stream.py"""
 
-import sys
 import cv2
-import numpy
 import unittest
 import video_stream_base as base
 import looper
