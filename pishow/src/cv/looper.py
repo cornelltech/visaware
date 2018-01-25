@@ -33,7 +33,8 @@ def parse_command_line(effect):
         elif arg[0:4] == "http":
             return lambda: generic_looper(IpVideoStream(arg).start(), effect)
         else:
-            return lambda: generic_looper(FileVideoStream(arg).start(), effect)
+            return lambda: generic_looper(
+                FileVideoStream(arg, NORMALIZED_FPS).start(), effect)
     else:
         print usage_message
         raise Exception("Only one argument allowed, you gave %d" % n_args)
@@ -43,23 +44,28 @@ def generic_looper(videoStream, effect):
     fps = FPS().start()
     pacer = Pacer(NORMALIZED_FPS).start()
 
+    lastFrame = None
     while True:
+        # print 'pre'
         frame = videoStream.read()
-    
-        if frame is not None and effect:
-            frame = effect.apply(frame)
-
+        if not numpy.array_equal(frame, lastFrame) and frame is not None:
+            if effect is not None:
+                frame = effect.apply(frame)    
             cv2.imshow('Frame', frame)
+            fps.update()
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        fps.update()
+        lastFrame = frame
+
         pacer.update()
 
     # clean up at the end
     fps.stop()
     videoStream.stop()
+    print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
+    print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
 
 if __name__ == "__main__":

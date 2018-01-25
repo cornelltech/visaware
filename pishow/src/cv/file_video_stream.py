@@ -1,75 +1,56 @@
 #!/usr/bin/env python
 """file_video_stream.py"""
 
-import unittest
-from threading import Thread
 import sys
 import cv2
-# from imutils.video import FPS
+import numpy
+import unittest
+from threading import Thread
 from fps import FPS
 from pacer import Pacer
 
-# DEFAULT_QUEUE_SIZE = 128
-DEFAULT_QUEUE_SIZE = 1024
 
-# import the Queue class from Python 3
-if sys.version_info >= (3, 0):
-    from queue import Queue
-
-# otherwise, import the Queue class for Python 2.7
-else:
-    from Queue import Queue
+DEFAULT_FPS = 30
 
 class FileVideoStream:
-    def __init__(self, path, queueSize=DEFAULT_QUEUE_SIZE):
+    def __init__(self, path, fps=DEFAULT_FPS):
         # initialize the file video stream along with the boolean
         # used to indicate if the thread should be stopped or not
+        print path
         self.stream = cv2.VideoCapture(path)
+        self.pacer = Pacer(fps)
         self.stopped = False
-
-        # initialize the queue used to store frames read from
-        # the video file
-        self.queue = Queue(maxsize=queueSize)
+        self.frame = None
 
     def start(self):
         # start a thread to read frames from the file video stream
-        thread = Thread(target=self.main_loop, args=())
+        thread = Thread(target=self.main_thread, args=())
         thread.daemon = True
         thread.start()
+        self.pacer.start()
         return self
 
-    def main_loop(self):
+    def main_thread(self):
         # keep looping infinitely
+        i = 0
         while True:
-            # if the thread indicator variable is set, stop the
-            # thread
-            if self.stopped:
+            # read the next frame from the file
+            (grabbed, frame) = self.stream.read()
+
+            if grabbed:
+                self.frame = frame
+            else:
+                # reached the end of the video file
+                self.stop()
                 return
 
-            # otherwise, ensure the queue has room in it
-            if not self.queue.full():
-                # read the next frame from the file
-                (grabbed, frame) = self.stream.read()
-
-                # if the `grabbed` boolean is `False`, then we have
-                # reached the end of the video file
-                if not grabbed:
-                    print 'done grabbing!'
-                    self.stop()
-                    return
-
-                # add the frame to the queue
-                self.queue.put(frame)
-            else:
-                print '[WARN] queue is full!'
+            self.pacer.update()
+            i += 1
 
     def read(self):
-        # return next frame in the queue
-        return self.queue.get()
-
-    def more(self):
-        # return True if there are still frames in the queue
-        return self.queue.qsize() > 0
+        if self.stopped:
+            return None
+        return self.frame
 
     def stop(self):
         # indicate that the thread should be stopped
@@ -82,20 +63,18 @@ class ModuleTests(unittest.TestCase):
         """can we do this?"""
         videoStream = FileVideoStream(TEST_FILE).start()
         fps = FPS().start()
-        pacer = Pacer(DESIRED_FPS).start()
 
+        lastFrame = None
         while True:
             frame = videoStream.read()
-            if frame is None:
-                print 'frame is none!'
-                break;
-        
-            cv2.imshow('Frame', frame)
-            fps.update()
-            pacer.update()
+            if not numpy.array_equal(frame, lastFrame) and frame is not None:
+                cv2.imshow('Frame', frame)
+                fps.update()
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+            lastFrame = frame
 
         fps.stop()
         videoStream.stop()
@@ -104,7 +83,5 @@ class ModuleTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    TEST_FILE = "../../../data/vid02.mov"
-    DESIRED_FPS = 30
-
+    TEST_FILE = "../../../data/vid01.mov"
     unittest.main()
