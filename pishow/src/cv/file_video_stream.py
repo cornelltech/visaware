@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """file_video_stream.py"""
 
-import cv2
 import unittest
+import cv2
 import video_stream_base as base
 
 

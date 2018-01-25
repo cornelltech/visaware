@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """ip_video_stream.py"""
 
+import unittest
 import urllib
 import cv2
 import numpy
-import unittest
 import video_stream_base as base
 
 
@@ -16,14 +16,15 @@ JPEG_END_MARKER = '\xff\xd9'
 class IpVideoStream(base.VideoStreamBase):
     """Like WebcamVideoStream of imutils.video but for IP cams"""
     def __init__(self, url, fps=base.DEFAULT_FPS):
+        """constructor"""
         super(IpVideoStream, self).__init__(fps)
         print url
         self.stream = urllib.urlopen(url)
         self.buffer = ''
 
     def loop_body(self):
-        self.buffer += self.stream.read(BUFFER_LENGTH)
         """Find a jpeg image in raw stream buffer, update accordingly"""
+        self.buffer += self.stream.read(BUFFER_LENGTH)
         iStart = self.buffer.find(JPEG_START_MARKER)
         iEnd = self.buffer.find(JPEG_END_MARKER)
         if iStart != -1 and iEnd != -1:
