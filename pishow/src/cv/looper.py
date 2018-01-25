@@ -6,12 +6,10 @@
 import sys
 import urllib
 import time
-import numpy
 import cv2
 from fps import FPS
 import file_video_stream as fvs
 from ip_video_stream import IpVideoStream
-
 from webcam_video_stream import WebcamVideoStream
 from pacer import Pacer
 
@@ -45,10 +43,10 @@ def generic_looper(videoStream, effect=None):
     fps = FPS().start()
     pacer = Pacer(NORMALIZED_FPS).start()
 
-    lastFrame = None
     while True:
         frame = videoStream.read()
-        if not numpy.array_equal(frame, lastFrame) and not videoStream.stopped:
+
+        if frame is not None and not videoStream.stopped:
             if effect is not None:
                 frame = effect.apply(frame)    
             cv2.imshow('Frame', frame)
@@ -56,8 +54,6 @@ def generic_looper(videoStream, effect=None):
 
         if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
-        lastFrame = frame
 
         pacer.update()
 
