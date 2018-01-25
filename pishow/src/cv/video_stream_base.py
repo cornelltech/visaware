@@ -6,7 +6,7 @@ import cv2
 from fps import FPS
 from threading import Thread
 from pacer import Pacer
-
+import time
 
 DEFAULT_FPS = 30.0
 
@@ -19,7 +19,7 @@ class VideoStreamBase:
         # initialize the file video stream along with the boolean
         # used to indicate if the thread should be stopped or not
         self.desiredFPS = desiredFPS
-        self.fps = FPS()
+        self.fpsCounter = FPS()
         self.pacer = Pacer(desiredFPS)
         self.stopped = True
         self.stream = None
@@ -35,7 +35,6 @@ class VideoStreamBase:
         thread = Thread(target=self.main_thread, args=())
         thread.daemon = True
         thread.start()
-        self.pacer.start()
         return self
 
     @abc.abstractmethod
@@ -44,17 +43,19 @@ class VideoStreamBase:
 
     def main_thread(self):
         # keep looping infinitely
-        self.fps.start()
+        self.fpsCounter.start()
+        if self.desiredFPS:
+            self.pacer.start()
         while True:
             if self.stopped:
                 return
-
+            
             self.loop_body()
 
             if self.desiredFPS:
                 self.pacer.update()
 
-            self.fps.update()
+            self.fpsCounter.update()
 
     def read(self):
         return self.frame
@@ -62,9 +63,9 @@ class VideoStreamBase:
     def stop(self):
         # indicate that the thread should be stopped
         self.stopped = True
-        self.fps.stop()
-        print("[INFO] elasped time: {:.2f}".format(self.fps.elapsed()))
-        print("[INFO] approx. FPS: {:.2f}".format(self.fps.fps()))
+        self.fpsCounter.stop()
+        print("[INFO] elasped time: {:.2f}".format(self.fpsCounter.elapsed()))
+        print("[INFO] approx. FPS: {:.2f}".format(self.fpsCounter.fps()))
 
     @staticmethod
     def generic_looper(videoStream, effect=None):
@@ -78,6 +79,7 @@ class VideoStreamBase:
             if frame is not None:
                 if effect is not None:
                     frame = effect.apply(frame)    
+                print time.time()
                 cv2.imshow('Frame', frame)
 
             pacer.update()
