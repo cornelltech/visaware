@@ -3,7 +3,6 @@
 
 import cv2
 import looper
-import gray
 import numpy
 
 

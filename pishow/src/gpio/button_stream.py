@@ -11,7 +11,9 @@ movie1 = ("/opt/vc/src/hello_pi/hello_video/test.h264")
 stream = ("http://192.168.0.18:8080/?action=stream")
 stream1 = ("http://128.84.84.129:8080/?action=stream")
 
+# last state
 last_state1 = False
+# current state
 input_state1 = False
 player = False
 
@@ -23,14 +25,19 @@ while True:
     input_state1 = GPIO.input(18)
 
     if input_state1 != last_state1:
-       
+        # something has changed
+
         if input_state1:
+            # it was released!
+
             #omxc.stdin.write('q')
             os.system('killall omxplayer.bin')
             player = True
             print("button released")
 
         elif (player and not input_state1):
+            # it was pressed!
+
             #os.system('killall omxplayer.bin')
             #omxc = Popen(['omxplayer', '-b', movie1])
             omxc = Popen(['omxplayer', '-b', '--live', stream1])
