@@ -3,6 +3,12 @@
 This directory contains the source code of all computer vision related
 stuff done on the pishow board.
 
+## Installation
+1) Pull code from github
+2) Cd to cv directory
+3) Type `workon cv2` before running any code
+4) `./<run-code>.py`
+
 ## Contents
 File or directory name | Purpose
 ---------------------- | -------
