@@ -29,7 +29,12 @@ class AvgFramesOnButton:
             # initialize blank (no activity) frame if haven't done so already
             self.noActivityFrame = numpy.zeros(frame.shape)
 
-        print GPIO.input(GPIO_PIN)
+        if GPIO.input(GPIO_PIN) == 1:
+            # ENGAGED: button is pressed down
+            return self.noActivityFrame
+        else:
+            # DISENGAGED: button is not pressed
+            return frame
 
         return frame
 
