@@ -24,6 +24,11 @@ class VideoStreamBase:
         self.stopped = True
         self.stream = None
         self.frame = None
+        cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty("Frame",
+                              cv2.WND_PROP_FULLSCREEN,
+                              cv2.WINDOW_FULLSCREEN)
+
 
     def start(self):
         # start a thread to read frames from the file video stream
@@ -49,7 +54,7 @@ class VideoStreamBase:
         while True:
             if self.stopped:
                 return
-            
+
             self.loop_body()
 
             if self.desiredFPS:
@@ -78,7 +83,7 @@ class VideoStreamBase:
             frame = videoStream.read()
             if frame is not None:
                 if effect is not None:
-                    frame = effect.apply(frame)    
+                    frame = effect.apply(frame)
                 cv2.imshow("Frame", frame)
 
         # clean up at the end
