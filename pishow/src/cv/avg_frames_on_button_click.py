@@ -8,6 +8,7 @@ import numpy
 import RPi.GPIO as GPIO
 
 GPIO_PIN = 18
+FULLSCREEN_SIZE = (1200, 1024)
 
 class AvgFramesOnButton:
     """average frames"""
@@ -22,8 +23,6 @@ class AvgFramesOnButton:
 
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
-        frame = self.avgFrames.apply(frame)
-
         # if self.noActivityFrame is None and frame is not None:
         if self.noActivityFrame is None:
             # initialize blank (no activity) frame if haven't done so already
@@ -31,12 +30,12 @@ class AvgFramesOnButton:
 
         if GPIO.input(GPIO_PIN) == 1:
             # ENGAGED: button is pressed down
-            return self.noActivityFrame
+            frame = self.noActivityFrame
         else:
             # DISENGAGED: button is not pressed
-            return frame
-
-        return frame
+            frame = self.avgFrames.apply(frame)
+            
+        return cv2.resize(frame, FULLSCREEN_SIZE)
 
 
 if __name__ == '__main__':
