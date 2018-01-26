@@ -9,7 +9,7 @@ import video_stream_base as base
 
 
 # constant for buffer we hold image data in while streaming from url
-BUFFER_LENGTH = 1024
+BUFFER_LENGTH = 1024 * 100
 JPEG_START_MARKER = '\xff\xd8'
 JPEG_END_MARKER = '\xff\xd9'
 
@@ -42,5 +42,6 @@ class ModuleTests(unittest.TestCase):
               
 
 if __name__ == "__main__":
+    # TEST_URL = 'http://128.84.84.129:8080/?action=stream'
     TEST_URL = 'http://128.84.84.149:8080/?action=stream'
     unittest.main()

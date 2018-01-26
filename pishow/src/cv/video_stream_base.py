@@ -72,17 +72,14 @@ class VideoStreamBase:
         """same loop code for any stream"""
         pacer = Pacer(DEFAULT_FPS).start()
         while True:
-            if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord('q'):
+            if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
             frame = videoStream.read()
             if frame is not None:
                 if effect is not None:
                     frame = effect.apply(frame)    
-                print time.time()
-                cv2.imshow('Frame', frame)
-
-            pacer.update()
+                cv2.imshow("Frame", frame)
 
         # clean up at the end
         videoStream.stop()
