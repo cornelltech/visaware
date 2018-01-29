@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 """avg_frames.py"""
 
@@ -9,6 +10,7 @@ import RPi.GPIO as GPIO
 
 GPIO_PIN = 18
 FULLSCREEN_SIZE = (1200, 1024)
+
 
 class AvgFramesOnButton:
     """average frames"""
