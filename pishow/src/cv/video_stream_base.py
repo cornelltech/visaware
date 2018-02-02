@@ -29,7 +29,6 @@ class VideoStreamBase:
                               cv2.WND_PROP_FULLSCREEN,
                               cv2.WINDOW_FULLSCREEN)
 
-
     def start(self):
         # start a thread to read frames from the file video stream
         if self.stream is None:

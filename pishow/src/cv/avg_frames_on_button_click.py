@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 """avg_frames.py"""
 
