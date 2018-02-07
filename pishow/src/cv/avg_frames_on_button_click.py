@@ -8,9 +8,9 @@ import looper
 import avg_frames
 import numpy
 import RPi.GPIO as GPIO
+import socket
 
 GPIO_PIN = 18
-FULLSCREEN_SIZE = (1280, 1024)
 
 class AvgFramesOnButton:
     """average frames"""
@@ -52,5 +52,11 @@ class AvgFramesOnButton:
 
 
 if __name__ == '__main__':
+    HOSTNAME = socket.gethostname()
+    if HOSTNAME == "pishow-150":
+        FULLSCREEN_SIZE = (1280, 1024)
+    else:
+        FULLSCREEN_SIZE = (1200, 1024)
+
     (looper.parse_command_line(AvgFramesOnButton()))()
     cv2.destroyAllWindows()
