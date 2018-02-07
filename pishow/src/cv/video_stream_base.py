@@ -10,13 +10,14 @@ import time
 import datetime
 
 
-DEFAULT_FPS = 30.0
+# stream out FPS
+DEFAULT_DESIRED_FPS = 30.0
 
 class VideoStreamBase:
     """VideoStreamBase"""
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, desiredFPS=DEFAULT_FPS):
+    def __init__(self, desiredFPS=DEFAULT_DESIRED_FPS):
         """Constructor"""
         self.desiredFPS = desiredFPS
         self.fpsCounter = FPS()
@@ -92,7 +93,7 @@ class VideoStreamBase:
         need to write the loop code every time we have to loop over a
         stream.
         """
-        pacer = Pacer(DEFAULT_FPS).start()
+        pacer = Pacer(DEFAULT_DESIRED_FPS).start()
         while True:
             if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord("q"):
                 break
