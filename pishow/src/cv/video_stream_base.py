@@ -7,7 +7,6 @@ from fps import FPS
 from threading import Thread
 from pacer import Pacer
 import time
-import datetime
 
 
 # stream out FPS
