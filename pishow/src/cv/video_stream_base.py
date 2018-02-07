@@ -11,6 +11,7 @@ import time
 
 # stream out FPS
 DEFAULT_DESIRED_FPS = 30.0
+WINDOW_NAME = "Stream"
 
 class VideoStreamBase:
     """VideoStreamBase"""
@@ -24,8 +25,8 @@ class VideoStreamBase:
         self.stopped = True
         self.stream = None
         self.frame = None
-        cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty("Frame", cv2.WND_PROP_FULLSCREEN,
+        cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN,
                               cv2.WINDOW_FULLSCREEN)
 
     def start(self):
@@ -94,14 +95,14 @@ class VideoStreamBase:
         """
         pacer = Pacer(DEFAULT_DESIRED_FPS).start()
         while True:
-            if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord("q"):
+            if videoStream.stopped or cv2.waitKey(30) & 0xFF == ord("q"):
                 break
 
             frame = videoStream.read()
             if frame is not None:
                 if effect is not None:
                     frame = effect.apply(frame)
-                cv2.imshow("Frame", frame)
+                cv2.imshow(WINDOW_NAME, frame)
                 pacer.update()
 
         # clean up at the end

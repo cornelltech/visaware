@@ -7,7 +7,7 @@ import video_stream_base as base
 
 
 class FileVideoStream(base.VideoStreamBase):
-    def __init__(self, path, fps=base.DEFAULT_FPS):
+    def __init__(self, path, fps=base.DEFAULT_DESIRED_FPS):
         super(FileVideoStream, self).__init__(fps)
         self.stream = cv2.VideoCapture(path)
 
@@ -30,5 +30,5 @@ class ModuleTests(unittest.TestCase):
         
 
 if __name__ == "__main__":
-    TEST_FILE = "../../../data/vid02.mov"
+    TEST_FILE = "../../../data/vid01.mov"
     unittest.main()
