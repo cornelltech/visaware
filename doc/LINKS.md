@@ -27,13 +27,12 @@ Here is where we share any links that are relevant to our work on this project.
 #### Prevent Raspberry Pi from falling asleep
 * [This discussion so far did not work - tried all steps up to last one, hopefully this last step will do the job](https://www.bitpi.co/2015/02/14/prevent-raspberry-pi-from-sleeping/)
 
-#### Multi-threading
+#### Multi-threading to increase FPS
 * [Arnaud's pointer for increasing FPS via THREADING](https://www.pyimagesearch.com/2015/12/21/increasing-webcam-fps-with-python-and-opencv/)
-* [Second blog that inspired the code that solved the latency problem](
 
 #### Matt Law's pointer to Global Interpreter Lock in Python
 * [We may have to revisit this issue so the link is here](https://opensource.com/article/17/4/grok-gil)
 * [For GIL, see also](https://en.wikipedia.org/wiki/Global_interpreter_lock)
 
-#### Latency issue and solution
+#### Latency issue (FPS is up, but huge delays) and solution
 * [This is the code on which we're basing all camera grabbing at this point - this is what fixed the latency issue finally - another multithreaded solution.](http://benhowell.github.io/guide/2015/03/09/opencv-and-web-cam-streaming)
