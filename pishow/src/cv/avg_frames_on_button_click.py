@@ -10,6 +10,7 @@ import numpy
 import RPi.GPIO as GPIO
 import socket
 
+
 GPIO_PIN = 18
 
 class AvgFramesOnButton:
@@ -20,10 +21,13 @@ class AvgFramesOnButton:
         self.avgFrames = avg_frames.AvgFrames()
         self.noActivityFrame = None
         self.lastGpioState = None
+        if socket.gethostname() == "pishow-150":
+            self.fullscreenSize = (1280, 1024)
+        else:
+            self.fullscreenSize = (1280, 1024)
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
 
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
@@ -48,15 +52,9 @@ class AvgFramesOnButton:
 
         self.lastGpioState = gpioState
 
-        return cv2.resize(frame, FULLSCREEN_SIZE)
+        return cv2.resize(frame, self.fullscreenSize)
 
 
 if __name__ == '__main__':
-    HOSTNAME = socket.gethostname()
-    if HOSTNAME == "pishow-150":
-        FULLSCREEN_SIZE = (1280, 1024)
-    else:
-        FULLSCREEN_SIZE = (1200, 1024)
-
     (looper.parse_command_line(AvgFramesOnButton()))()
     cv2.destroyAllWindows()

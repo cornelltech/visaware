@@ -10,17 +10,17 @@ from threading import Thread, Event, ThreadError
 class Cam():
 
   def __init__(self, url):
-    
+
     self.stream = requests.get(url, stream=True)
     self.thread_cancelled = False
     self.thread = Thread(target=self.run)
     print "camera initialised"
 
-    
+
   def start(self):
     self.thread.start()
     print "camera stream started"
-    
+
   def run(self):
     bytes=''
     while not self.thread_cancelled:
@@ -38,12 +38,12 @@ class Cam():
             exit(0)
       except ThreadError:
         self.thread_cancelled = True
-        
-        
+
+
   def is_running(self):
     return self.thread.isAlive()
-      
-    
+
+
   def shut_down(self):
     self.thread_cancelled = True
     #block while waiting for thread to terminate
@@ -51,9 +51,9 @@ class Cam():
       time.sleep(1)
     return True
 
-  
-    
+
+
 if __name__ == "__main__":
-  url = 'http://192.168.2.1/?action=stream'
+  url = 'http://128.84.84.149:8080/?action=stream'
   cam = Cam(url)
   cam.start()

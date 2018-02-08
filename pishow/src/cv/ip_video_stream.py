@@ -36,6 +36,8 @@ class IpVideoStream(base.VideoStreamBase):
         #     self.frame = cv2.imdecode(
         #         numpy.fromstring(jpg, dtype=numpy.uint8), 1)
 
+        # note this block much slower than version (block) above
+        # still, the above version is not as fast as ext_exp01.py
         if self.iStart == -1:
             # we have not found the start marker yet, find it
             self.iStart = self.buffer.find(JPEG_START_MARKER)
@@ -61,6 +63,6 @@ class ModuleTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # TEST_URL = 'http://128.84.84.129:8080/?action=stream'
-    TEST_URL = 'http://128.84.84.149:8080/?action=stream'
+    TEST_URL = 'http://128.84.84.129:8080/?action=stream'
+    # TEST_URL = 'http://128.84.84.149:8080/?action=stream'
     unittest.main()

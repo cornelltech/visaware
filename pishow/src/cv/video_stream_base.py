@@ -10,7 +10,7 @@ import time
 
 
 # stream out FPS
-DEFAULT_DESIRED_FPS = 30.0
+DEFAULT_DESIRED_FPS = 10.0
 WINDOW_NAME = "Stream"
 
 class VideoStreamBase:
@@ -63,13 +63,16 @@ class VideoStreamBase:
         self.fpsCounter.start()
         if self.desiredFPS:
             self.pacer.start()
+
         while True:
             if self.stopped:
                 return
+
             self.loop_body()
+
+            self.fpsCounter.update()
             if self.desiredFPS:
                 self.pacer.update()
-            self.fpsCounter.update()
 
     def read(self):
         """Return the current frame in the stream"""
