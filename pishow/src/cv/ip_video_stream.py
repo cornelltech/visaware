@@ -15,7 +15,7 @@ JPEG_END_MARKER = '\xff\xd9'
 
 class IpVideoStream(base.VideoStreamBase):
     """Like WebcamVideoStream of imutils.video but for IP cams"""
-    def __init__(self, url, fps=base.DEFAULT_FPS):
+    def __init__(self, url, fps=base.DEFAULT_DESIRED_FPS):
         """constructor"""
         super(IpVideoStream, self).__init__(fps)
         self.stream = urllib.urlopen(url)
