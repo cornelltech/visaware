@@ -24,7 +24,7 @@ class AvgFramesOnButton:
         if socket.gethostname() == "pishow-150":
             self.fullscreenSize = (1280, 1024)
         else:
-            self.fullscreenSize = (1200, 1024)            
+            self.fullscreenSize = (1280, 1024)
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
