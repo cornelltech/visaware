@@ -38,5 +38,7 @@ Here is where we share any links that are relevant to our work on this project.
 * [This is the code on which we're basing all camera grabbing at this point - this is what fixed the latency issue finally - another multithreaded solution.](http://benhowell.github.io/guide/2015/03/09/opencv-and-web-cam-streaming)
 
 #### For later (latency / FPS best solution)
+
 This one approach may be useful, also look at H.264 and other codecs
+
 *[Video streaming with FLASK](https://github.com/log0/video_streaming_with_flask_example)
