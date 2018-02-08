@@ -41,4 +41,4 @@ Here is where we share any links that are relevant to our work on this project.
 
 This one approach may be useful, also look at H.264 and other codecs
 
-*[Video streaming with FLASK](https://github.com/log0/video_streaming_with_flask_example)
+* [Video streaming with FLASK](https://github.com/log0/video_streaming_with_flask_example)
