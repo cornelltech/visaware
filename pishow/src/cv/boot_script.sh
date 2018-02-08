@@ -8,6 +8,8 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 workon cv2
 
+setterm -blank 0 -powerdown 0
+
 BOOT_EXEC="/home/pi/workspace/visaware/pishow/src/cv/ext_exp01m.py"
 LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
 
