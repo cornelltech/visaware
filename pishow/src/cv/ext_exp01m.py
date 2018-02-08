@@ -7,6 +7,7 @@ import requests
 import threading
 from threading import Thread, Event, ThreadError
 from avg_frames_on_button_click import AvgFramesOnButton
+import socket
 
 
 WINDOW_NAME = 'cam'
@@ -65,6 +66,9 @@ class Cam():
 
 
 if __name__ == "__main__":
-    url = 'http://128.84.84.149:8080/?action=stream'
+    if socket.gethostname() == "pishow-150":
+        url = 'http://128.84.84.129:8080/?action=stream'
+    else:
+        url = 'http://128.84.84.149:8080/?action=stream'
     cam = Cam(url)
     cam.start()
