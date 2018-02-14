@@ -13,7 +13,7 @@ import time
 DEFAULT_DESIRED_FPS = 10.0
 WINDOW_NAME = "Stream"
 
-class VideoStreamBase:
+class VideoStreamBase(object):
     """VideoStreamBase"""
     __metaclass__ = abc.ABCMeta
 
