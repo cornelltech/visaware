@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 """random_timer.py - like pins-based wall-mounted timers, with randomness"""
 
-import cv2
-import looper
-import gray
-import numpy
-
 
 class RandomTimer(object):
     """like pins-based wall-mounted timers, with randomness"""
