@@ -6,20 +6,20 @@ import time
 
 
 class OnOffTimer(object):
-    """like pins-based wall-mounted timers, with randomness"""
+    """Alternate between ON and OFF states for specific durations"""
 
-    def __init__(self, secondsOn, secondsOff, startTurnedOn=False):
+    def __init__(self, secondsOn, secondsOff, startOn=False):
         """constructor"""
         self.secondsOn = secondsOn
         self.secondsOff = secondsOff
         self.bIsOn = startOn
         timeNow = time.time()
         if startOn:
-            self.timeTurnedOn = timeNow
-            self.timeTurnedOff = None
+            self.timeOn = timeNow
+            self.timeOff = None
         else:
-            self.timeTurnedOn = None
-            self.timeTurnedOff = timeNow
+            self.timeOn = None
+            self.timeOff = timeNow
 
     def is_on(self):
         """
@@ -31,17 +31,17 @@ class OnOffTimer(object):
         justSwitched = False
         if self.bIsOn:
             # we are on now
-            if timeNow - self.timeTurnedOn > self.secondsOn:
+            if timeNow - self.timeOn > self.secondsOn:
                 # exceeded the ON time, turn off
                 self.bIsOn = False
-                self.timeTurnedOff = timeNow
+                self.timeOff = timeNow
                 justSwitched = True
         else:
             # we are off now
-            if timeNow - self.timeTurnedOff > self.secondsOff:
+            if timeNow - self.timeOff > self.secondsOff:
                 # exceeded the OFF time, turn on
                 self.bIsOn = True
-                self.timeTurnedOff = timeNow
+                self.timeOn = timeNow
                 justSwitched = True
 
         return (self.bIsOn, justSwitched)
