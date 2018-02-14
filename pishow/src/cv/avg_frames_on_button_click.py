@@ -2,6 +2,7 @@
 """avg_frames.py"""
 
 import datetime
+import time
 import sys
 import cv2
 import looper
