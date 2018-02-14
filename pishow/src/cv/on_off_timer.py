@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """on_off_timer.py - alternates being on and off for specific durations"""
 
-
 import time
 
 
