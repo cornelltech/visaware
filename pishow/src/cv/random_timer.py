@@ -7,26 +7,29 @@ import gray
 import numpy
 
 
-class RandomTimer:
-    """absolute value of (current_frame - previous_frame)"""
+class RandomTimer(object):
+    """like pins-based wall-mounted timers, with randomness"""
 
-    def __init__(self):
+    def __init__(self, minOn, maxOn, minOff, maxOff):
         """constructor"""
-        self.gray = gray.Gray()
-        self.last_frame = None
+        self.minOn = minOn
+        self.maxOn = maxOn
 
-    def apply(self, frame):
-        """returns diff"""
-        frame = self.gray.apply(frame)
-        if self.last_frame is None:
-            self.last_frame = frame
-            return frame
-        else:
-            result = cv2.absdiff(frame, self.last_frame)
-            self.last_frame = frame
-            return result
+        self.minOff = minOff
+        self.maxOff = maxOff
 
+        self.bIsOn = False
+
+    def update(self):
+
+    def is_on(self):
+        """returns whether we are on or not right now"""
+        self.update()
+        return self.bIsOn
+
+    def just_turned_on(self):
+        """returns whether we are on AND last time we checked we were not on"""
+        self.update()
 
 if __name__ == '__main__':
-    (looper.parse_command_line(AbsDiff()))()
-    cv2.destroyAllWindows()
+    print 'hello'
