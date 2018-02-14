@@ -34,18 +34,17 @@ class Cam():
         bytes=''
         while not self.thread_cancelled:
             try:
-                bytes+=self.stream.raw.read(1024)
+                bytes += self.stream.raw.read(1024)
                 a = bytes.find('\xff\xd8')
                 b = bytes.find('\xff\xd9')
-                if a!=-1 and b!=-1:
+                if a != -1 and b != -1:
                     jpg = bytes[a:b+2]
                     bytes= bytes[b+2:]
                     img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),
-                                                         cv2.IMREAD_COLOR)
-
+                                       cv2.IMREAD_COLOR)
                     img = self.avg.apply(img)
 
-                    cv2.imshow(WINDOW_NAME,img)
+                    cv2.imshow(WINDOW_NAME, img)
                     if cv2.waitKey(1) ==27:
                         exit(0)
             except ThreadError:

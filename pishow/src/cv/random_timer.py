@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """random_timer.py - like pins-based wall-mounted timers, with randomness"""
 
+import time
+
 
 class RandomTimer(object):
     """like pins-based wall-mounted timers, with randomness"""
@@ -13,9 +15,18 @@ class RandomTimer(object):
         self.minOff = minOff
         self.maxOff = maxOff
 
+        self.bPrevWasOn = False
         self.bIsOn = False
 
+        self.update()
+
+    def turn_on(self):
+        """Switch to ON mode"""
+        self.bIsOn = True
+
     def update(self):
+        """Tracks last time is_on() or just_turned_on() is called"""
+        self.lastUpdateTime = time.time()
 
     def is_on(self):
         """returns whether we are on or not right now"""
