@@ -15,9 +15,9 @@ import on_off_timer
 
 GPIO_PIN = 18
 # timer on state duration
-ON_SECONDS = 10
+ON_SECONDS = 120
 # timer off state duration
-OFF_SECONDS = 30
+OFF_SECONDS = 900
 
 class AvgFramesOnButton:
     """average frames"""
