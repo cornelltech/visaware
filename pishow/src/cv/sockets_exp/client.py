@@ -5,16 +5,18 @@ import socket
 
 
 SOCKET_PORT = 5005
-MAX_QUEUED_CONNECTIONS = 5
-
 
 if __name__ == "__main__":
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((socket.gethostname(), SOCKET_PORT))
-    server_socket.listen(MAX_QUEUED_CONNECTIONS)
-    while True:
-        # accept connections from outside
-        (client_socket, address) = server_socket.accept()
-        # now do something with client_socket
-        data = client_socket.recv(1)
-        print data
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    if socket.gethostname() == "pishow-150":
+        server_hostname = "pishow-130"
+    elif socket.gethostname() == "pishow-130":
+        server_hostname = "pishow-150"
+
+    print "connecting to server %s" % server_hostname
+    client_socket.connect((server_hostname, SOCKET_PORT))
+    client_socket.send('a')
+    client_socket.close()
