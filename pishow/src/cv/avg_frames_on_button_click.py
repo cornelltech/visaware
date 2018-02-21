@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""avg_frames.py"""
+"""avg_frames_on_button_click.py"""
 
 import datetime
 import time
