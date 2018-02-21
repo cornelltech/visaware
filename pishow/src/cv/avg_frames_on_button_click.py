@@ -51,7 +51,7 @@ class AvgFramesOnButton:
             # DISENGAGED: button is not pressed
             frame = self.avgFrames.apply(frame)
 
-        time.sleep(0.1)
+        # time.sleep(0.1)
 
         self.lastGpioState = gpioState
 
