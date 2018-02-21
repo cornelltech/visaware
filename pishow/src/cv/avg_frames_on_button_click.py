@@ -10,15 +10,21 @@ import avg_frames
 import numpy
 import RPi.GPIO as GPIO
 import socket
+import on_off_timer
 
 
 GPIO_PIN = 18
+# timer on state duration
+ON_SECONDS = 120
+# timer off state duration
+OFF_SECONDS = 900
 
 class AvgFramesOnButton:
     """average frames"""
 
     def __init__(self):
         """constructor"""
+        self.timer = on_off_timer.OnOffTimer(ON_SECONDS, OFF_SECONDS)
         self.avgFrames = avg_frames.AvgFrames()
         self.noActivityFrame = None
         self.lastGpioState = None
@@ -40,20 +46,34 @@ class AvgFramesOnButton:
 
         gpioState = GPIO.input(GPIO_PIN)
 
-        if self.lastGpioState != gpioState:
-            print '%s\t%s' % (datetime.datetime.now(), gpioState)
-            sys.stdout.flush()
+        timeNow = datetime.datetime.now()
 
-        if gpioState == 1:
-            # ENGAGED: button is pressed down
+        if self.lastGpioState != gpioState:
+            print '%s\t%s' % (timeNow, gpioState)
+
+        bTimerIsOn, bJustSwitched = self.timer.is_on()
+
+        if bTimerIsOn:
+            timerState = 'ON'
+        else:
+            timerState = 'OFF'
+
+        if bJustSwitched:
+            print '{}\tTimer: turning system {}'.format(
+                timeNow, timerState)
+
+        if gpioState == 1 and not bTimerIsOn:
+            # DISENGAGED
             frame = self.noActivityFrame
         else:
-            # DISENGAGED: button is not pressed
+            # ENGAGED
             frame = self.avgFrames.apply(frame)
 
         # time.sleep(0.1)
 
         self.lastGpioState = gpioState
+
+        sys.stdout.flush()
 
         return cv2.resize(frame, self.fullscreenSize)
 
