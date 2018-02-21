@@ -13,7 +13,24 @@ import socket
 import on_off_timer
 
 
+################################################################################
+# Socket (full-duplex) communication globals (code here is the server code)
+################################################################################
+
+# One pishow (this one) is the socket server, the other pishow is socket client.
+CLIENT_PISHOW_SOCKET_IP = 128.84.84.130
+CLIENT_SOCKET_PORT = 5005
+# we only send one byte to indicate on or off
+SOCKET_BUFFER_SIZE = 1
+
+################################################################################
+# GPIO globals
+################################################################################
 GPIO_PIN = 18
+
+################################################################################
+# TIMING globals
+################################################################################
 # timer on state duration
 ON_SECONDS = 120
 # timer off state duration
@@ -28,13 +45,29 @@ class AvgFramesOnButton:
         self.avgFrames = avg_frames.AvgFrames()
         self.noActivityFrame = None
         self.lastGpioState = None
-        if socket.gethostname() == "pishow-150":
+        hostname = socket.gethostname()
+        if hostname == "pishow-150":
             self.fullscreenSize = (1280, 1024)
         else:
             self.fullscreenSize = (1280, 1024)
+
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+        # socket setup
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((CLIENT_PISHOW_SOCKET_IP, CLIENT_SOCKET_PORT))
+        self.socket.bind((hostname, CLIENT_SOCKET_PORT))
+
+
+    def listenOnSocket():
+        receivedByte = self.socket.recv(1)
+
+        if receivedByte = b'':
+            raise RuntimeError("socket communication broken")
+
+        return receivedByte
 
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
