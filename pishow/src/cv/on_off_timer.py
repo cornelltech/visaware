@@ -44,7 +44,3 @@ class OnOffTimer(object):
                 justSwitched = True
 
         return (self.bIsOn, justSwitched)
-
-
-if __name__ == '__main__':
-    print 'hello'
