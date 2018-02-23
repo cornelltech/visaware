@@ -80,19 +80,17 @@ class AvgFramesOnButton:
         thread.start()
 
     def socket_thread_worker(self):
-        # while True:
-        #     if self.socket_thread_stopped:
-        #         return
+        while True:
+            if self.socket_thread_stopped:
+                return
 
-        #     time.sleep(0.1)
+            time.sleep(0.1)
 
-        #     (client_socket, address) = self.server_socket.accept()
-        #     # do something with client_socket: try to receive one byte
-        #     data = client_socket.recv(1)
-        #     print data
-        #     self.last_socket_receive_time = time.time()
-        #     self.last_socket_data = data
-        pass
+            (client_socket, address) = self.server_socket.accept()
+            # do something with client_socket: try to receive one byte
+            data = client_socket.recv(1)
+            self.last_socket_receive_time = time.time()
+            self.last_socket_data = data
 
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
@@ -107,6 +105,7 @@ class AvgFramesOnButton:
         timeNow = datetime.datetime.now()
 
         if self.lastGpioState != gpioState:
+            print "[1] last data: %s" % self.last_socket_data
             print "%s\t%s" % (timeNow, gpioState)
 
         # determine whether our timer module is currrently on or not
@@ -119,10 +118,11 @@ class AvgFramesOnButton:
             timerState = "OFF"
 
         if bJustSwitched:
+            print "[2] last data: %s" % self.last_socket_data
             print "{}\tTimer: turning system {}".format(
                 timeNow, timerState)
 
-        if gpioState == 1 and not bTimerIsOn and self.last_socket_data != 'a':
+        if gpioState == 1 and not bTimerIsOn:
             # DISENGAGED
             frame = self.noActivityFrame
         else:
