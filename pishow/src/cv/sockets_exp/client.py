@@ -18,5 +18,5 @@ if __name__ == "__main__":
 
     print "connecting to server %s" % server_hostname
     client_socket.connect((server_hostname, SOCKET_PORT))
-    client_socket.send('a')
+    client_socket.send('b')
     client_socket.close()

@@ -13,6 +13,5 @@ setterm -blank 0 -powerdown 0
 BOOT_EXEC="/home/pi/workspace/visaware/pishow/src/cv/ext_exp01m.py"
 LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
 
-echo "boot_script.sh: STREAM_IP=$STREAM_IP"
-
+echo "boot_script.sh: starting..."
 DISPLAY=:0 $BOOT_EXEC >> $LOG_FILE 2>&1

@@ -11,6 +11,7 @@ import numpy
 import RPi.GPIO as GPIO
 import socket
 import on_off_timer
+from threading import Thread
 
 
 ################################################################################
@@ -56,17 +57,42 @@ class AvgFramesOnButton:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        # socket setup
+        self.socket_thread_stopped = True
+        self.last_socket_data = None
+        self.last_socket_receive_time = None
+        # start the socket listening
+        self.start_socket_thread()
+
+    def __del__(self):
+        # stop via this variable
+        self.socket_thread_stopped = True
+        # make sure you give enough time for thread to see the variable change
+        time.sleep(100)
+        # TODO: there is probably a better way to stop
+
+    def start_socket_thread(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(("", SOCKET_PORT))
         self.server_socket.listen(SOCKET_MAX_QUEUED_CONNECTIONS)
+        self.socket_thread_stopped = False
+        thread = Thread(target=self.socket_thread_worker, args=())
+        thread.daemon = True
+        thread.start()
 
-    def socket_receive(self):
-        """accept connections on our socket and try to receive data"""
-        (client_socket, address) = self.server_socket.accept()
-        # do something with client_socket: try to receive one byte
-        data = client_socket.recv(1)
-        print data
+    def socket_thread_worker(self):
+        # while True:
+        #     if self.socket_thread_stopped:
+        #         return
+
+        #     time.sleep(0.1)
+
+        #     (client_socket, address) = self.server_socket.accept()
+        #     # do something with client_socket: try to receive one byte
+        #     data = client_socket.recv(1)
+        #     print data
+        #     self.last_socket_receive_time = time.time()
+        #     self.last_socket_data = data
+        pass
 
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
@@ -83,6 +109,8 @@ class AvgFramesOnButton:
         if self.lastGpioState != gpioState:
             print "%s\t%s" % (timeNow, gpioState)
 
+        # determine whether our timer module is currrently on or not
+        # and whether it just switched states (since the last time we checked)
         bTimerIsOn, bJustSwitched = self.timer.is_on()
 
         if bTimerIsOn:
@@ -94,7 +122,7 @@ class AvgFramesOnButton:
             print "{}\tTimer: turning system {}".format(
                 timeNow, timerState)
 
-        if gpioState == 1 and not bTimerIsOn:
+        if gpioState == 1 and not bTimerIsOn and self.last_socket_data != 'a':
             # DISENGAGED
             frame = self.noActivityFrame
         else:
@@ -106,12 +134,6 @@ class AvgFramesOnButton:
         self.lastGpioState = gpioState
 
         sys.stdout.flush()
-
-        # finally, before returning, process socket stuff ideally we
-        # will put this in another thread later this is here just to
-        # get a system up and running first so that we can debug
-        # aspects of the system that are unrelated to software
-        self.socket_receive()
 
         return cv2.resize(frame, self.fullscreenSize)
 
