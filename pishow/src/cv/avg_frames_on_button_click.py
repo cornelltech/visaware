@@ -18,8 +18,9 @@ import on_off_timer
 ################################################################################
 
 # One pishow (this one) is the socket server, the other pishow is socket client.
-CLIENT_PISHOW_SOCKET_IP = 128.84.84.130
-CLIENT_SOCKET_PORT = 5005
+CLIENT_PISHOW_SOCKET_IP = "128.84.84.130"
+SOCKET_PORT = 5005
+SOCKET_MAX_QUEUED_CONNECTIONS = 5
 # we only send one byte to indicate on or off
 SOCKET_BUFFER_SIZE = 1
 
@@ -56,24 +57,22 @@ class AvgFramesOnButton:
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # socket setup
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((CLIENT_PISHOW_SOCKET_IP, CLIENT_SOCKET_PORT))
-        self.socket.bind((hostname, CLIENT_SOCKET_PORT))
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind(("", SOCKET_PORT))
+        self.server_socket.listen(SOCKET_MAX_QUEUED_CONNECTIONS)
 
-
-    def listenOnSocket():
-        receivedByte = self.socket.recv(1)
-
-        if receivedByte = b'':
-            raise RuntimeError("socket communication broken")
-
-        return receivedByte
+    def socket_receive(self):
+        """accept connections on our socket and try to receive data"""
+        (client_socket, address) = self.server_socket.accept()
+        # do something with client_socket: try to receive one byte
+        data = client_socket.recv(1)
+        print data
 
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
         # if self.noActivityFrame is None and frame is not None:
         if self.noActivityFrame is None:
-            # initialize blank (no activity) frame if haven't done so already
+            # initialize blank (no activity) frame if haven"t done so already
             # (this only happens once at the start)
             self.noActivityFrame = numpy.zeros(frame.shape)
 
@@ -82,17 +81,17 @@ class AvgFramesOnButton:
         timeNow = datetime.datetime.now()
 
         if self.lastGpioState != gpioState:
-            print '%s\t%s' % (timeNow, gpioState)
+            print "%s\t%s" % (timeNow, gpioState)
 
         bTimerIsOn, bJustSwitched = self.timer.is_on()
 
         if bTimerIsOn:
-            timerState = 'ON'
+            timerState = "ON"
         else:
-            timerState = 'OFF'
+            timerState = "OFF"
 
         if bJustSwitched:
-            print '{}\tTimer: turning system {}'.format(
+            print "{}\tTimer: turning system {}".format(
                 timeNow, timerState)
 
         if gpioState == 1 and not bTimerIsOn:
@@ -108,9 +107,15 @@ class AvgFramesOnButton:
 
         sys.stdout.flush()
 
+        # finally, before returning, process socket stuff ideally we
+        # will put this in another thread later this is here just to
+        # get a system up and running first so that we can debug
+        # aspects of the system that are unrelated to software
+        self.socket_receive()
+
         return cv2.resize(frame, self.fullscreenSize)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     (looper.parse_command_line(AvgFramesOnButton()))()
     cv2.destroyAllWindows()
