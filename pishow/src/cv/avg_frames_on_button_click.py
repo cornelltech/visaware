@@ -26,10 +26,10 @@ SOCKET_BUFFER_SIZE = 1
 # the number of seconds after receiving a message from the other board
 # (telling us that it just turned on) during which we will turn on this
 # board's showing machinery. i.e. we display with this board if the other
-# board has sent a message less than SOCKET_RECEIVE_ON_TIME_THRESHOLD
+# board has sent a message less than SOCKET_RECEIVE_TIME_THRESHOLD
 # seconds. This keeps projection on this board in "on" state for at least
-# (SOCKET_RECEIVE_ON_TIME_THRESHOLD seconds) time.
-SOCKET_RECEIVE_ON_TIME_THRESHOLD = 5
+# (SOCKET_RECEIVE_TIME_THRESHOLD seconds) time.
+SOCKET_RECEIVE_TIME_THRESHOLD = 5.0
 
 ################################################################################
 # GPIO globals
@@ -41,10 +41,11 @@ GPIO_PIN = 18
 ################################################################################
 # timer on state duration
 # ON_SECONDS = 120
-ON_SECONDS = 5
+ON_SECONDS = 2
 # timer off state duration
 # OFF_SECONDS = 900
-OFF_SECONDS = 6000
+# OFF_SECONDS = 6000
+OFF_SECONDS = 20
 
 class AvgFramesOnButton:
     """average frames"""
@@ -139,26 +140,26 @@ class AvgFramesOnButton:
 
         # determine whether our timer module is currrently on or not
         # and whether it just switched states (since the last time we checked)
-        timer_is_on, bJustSwitched = self.timer.is_on()
+        timer_is_on, just_switched = self.timer.is_on()
 
         if timer_is_on:
-            timerState = "ON"
+            timer_state = "ON"
         else:
-            timerState = "OFF"
+            timer_state = "OFF"
 
-        if bJustSwitched:
+        if just_switched:
             print "[2] last data: %s" % self.last_socket_data
 
             print "{}\tTimer: turning system {}".format(
-                timeNow, timerState)
+                timeNow, timer_state)
 
         if self.last_socket_receive_time is not None:
-            delta_message_time = time.time()-self.last_socket_receive_time
+            time_since_message_arrived = time.time()-self.last_socket_receive_time
         else:
-            delta_message_time = float('inf')
-        got_message_on = delta_message_time > SOCKET_RECEIVE_ON_TIME_THRESHOLD
+            time_since_message_arrived = float('inf')
+        received_on_message = time_since_message_arrived < SOCKET_RECEIVE_TIME_THRESHOLD
 
-        if gpio_state == 1 and not timer_is_on and not got_message_on:
+        if gpio_state == 1 and not timer_is_on and not received_on_message:
             # DISENGAGED
             frame = self.no_activity_frame
         else:
@@ -172,7 +173,5 @@ class AvgFramesOnButton:
         sys.stdout.flush()
 
         return cv2.resize(frame, self.fullscreen_size)
-
-
 
     cv2.destroyAllWindows()
