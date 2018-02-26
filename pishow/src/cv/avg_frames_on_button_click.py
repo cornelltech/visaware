@@ -44,69 +44,86 @@ class AvgFramesOnButton:
     def __init__(self):
         """constructor"""
         self.timer = on_off_timer.OnOffTimer(ON_SECONDS, OFF_SECONDS)
-        self.avgFrames = avg_frames.AvgFrames()
-        self.noActivityFrame = None
-        self.lastGpioState = None
+        self.avg_frames = avg_frames.AvgFrames()
+        self.no_activity_frame = None
+        self.last_gpio_state = None
         hostname = socket.gethostname()
         if hostname == "pishow-150":
-            self.fullscreenSize = (1280, 1024)
+            self.fullscreen_size = (1280, 1024)
+            self.hostname_to_message = "pishow-130"
         else:
-            self.fullscreenSize = (1280, 1024)
+            self.fullscreen_size = (1280, 1024)
+            self.hostname_to_message = "pishow-150"
 
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        self.socket_thread_stopped = True
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        self.server_socket = None
+        self.server_socket_thread_stopped = True
         self.last_socket_data = None
         self.last_socket_receive_time = None
         # start the socket listening
-        self.start_socket_thread()
+        self.start_server_socket_thread()
 
     def __del__(self):
         # stop via this variable
-        self.socket_thread_stopped = True
+        self.server_socket_thread_stopped = True
         # make sure you give enough time for thread to see the variable change
         time.sleep(100)
         # TODO: there is probably a better way to stop
 
-    def start_socket_thread(self):
+    def start_server_socket_thread(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(("", SOCKET_PORT))
         self.server_socket.listen(SOCKET_MAX_QUEUED_CONNECTIONS)
-        self.socket_thread_stopped = False
-        thread = Thread(target=self.socket_thread_worker, args=())
+        self.server_socket_thread_stopped = False
+        thread = Thread(target=self.server_socket_thread_worker, args=())
         thread.daemon = True
         thread.start()
 
-    def socket_thread_worker(self):
+    def server_socket_thread_worker(self):
         while True:
-            if self.socket_thread_stopped:
+            if self.server_socket_thread_stopped:
                 return
 
             time.sleep(0.1)
 
-            (client_socket, address) = self.server_socket.accept()
+            (my_clients_socket, address) = self.server_socket.accept()
             # do something with client_socket: try to receive one byte
-            data = client_socket.recv(1)
+            data = my_clients_socket.recv(1)
             self.last_socket_receive_time = time.time()
             self.last_socket_data = data
 
+    def tell_other_i_just_turned_on(self):
+        self.client_socket.connect((self.hostname_to_message, SOCKET_PORT))
+        self.client_socket.send('1')
+        self.client_socket.close()
+
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
-        # if self.noActivityFrame is None and frame is not None:
-        if self.noActivityFrame is None:
+        # if self.no_activity_frame is None and frame is not None:
+        if self.no_activity_frame is None:
             # initialize blank (no activity) frame if haven"t done so already
             # (this only happens once at the start)
-            self.noActivityFrame = numpy.zeros(frame.shape)
+            self.no_activity_frame = numpy.zeros(frame.shape)
 
-        gpioState = GPIO.input(GPIO_PIN)
+        gpio_state = GPIO.input(GPIO_PIN)
 
         timeNow = datetime.datetime.now()
 
-        if self.lastGpioState != gpioState:
+        if self.last_gpio_state != gpio_state:
+            # we have changed GPIO state - toggled the switch just now
+            # either we changed from on to off or vice versa
             print "[1] last data: %s" % self.last_socket_data
-            print "%s\t%s" % (timeNow, gpioState)
+            print "%s\t%s" % (timeNow, gpio_state)
+            
+            # only in the case of having just turned on (gpio__state == 0)
+            # do we tell the other board, because in that case we want the
+            # other board to turn on too
+            self.tell_other_i_just_turned_on()
 
         # determine whether our timer module is currrently on or not
         # and whether it just switched states (since the last time we checked)
@@ -122,20 +139,20 @@ class AvgFramesOnButton:
             print "{}\tTimer: turning system {}".format(
                 timeNow, timerState)
 
-        if gpioState == 1 and not bTimerIsOn:
+        if gpio_state == 1 and not bTimerIsOn:
             # DISENGAGED
-            frame = self.noActivityFrame
+            frame = self.no_activity_frame
         else:
             # ENGAGED
-            frame = self.avgFrames.apply(frame)
+            frame = self.avg_frames.apply(frame)
 
         # time.sleep(0.1)
 
-        self.lastGpioState = gpioState
+        self.last_gpio_state = gpio_state
 
         sys.stdout.flush()
 
-        return cv2.resize(frame, self.fullscreenSize)
+        return cv2.resize(frame, self.fullscreen_size)
 
 
 if __name__ == "__main__":
