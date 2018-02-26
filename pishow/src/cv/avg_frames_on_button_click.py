@@ -19,7 +19,6 @@ from threading import Thread
 ################################################################################
 
 # One pishow (this one) is the socket server, the other pishow is socket client.
-CLIENT_PISHOW_SOCKET_IP = "128.84.84.130"
 SOCKET_PORT = 5005
 SOCKET_MAX_QUEUED_CONNECTIONS = 5
 # we only send one byte to indicate on or off
@@ -59,8 +58,6 @@ class AvgFramesOnButton:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         self.server_socket = None
         self.server_socket_thread_stopped = True
         self.last_socket_data = None
@@ -98,9 +95,15 @@ class AvgFramesOnButton:
             self.last_socket_data = data
 
     def tell_other_i_just_turned_on(self):
-        self.client_socket.connect((self.hostname_to_message, SOCKET_PORT))
-        self.client_socket.send('1')
-        self.client_socket.close()
+        print "tell_other_i_just_turned_on(self)"
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            self.client_socket.connect((self.hostname_to_message, SOCKET_PORT))
+            self.client_socket.send('1')
+            self.client_socket.close()
+        except:
+            print "UNABLE TO SEND MESSAGE TO %s!" % self.hostname_to_message
+
 
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
@@ -119,7 +122,7 @@ class AvgFramesOnButton:
             # either we changed from on to off or vice versa
             print "[1] last data: %s" % self.last_socket_data
             print "%s\t%s" % (timeNow, gpio_state)
-            
+
             # only in the case of having just turned on (gpio__state == 0)
             # do we tell the other board, because in that case we want the
             # other board to turn on too
