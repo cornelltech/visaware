@@ -23,6 +23,13 @@ SOCKET_PORT = 5005
 SOCKET_MAX_QUEUED_CONNECTIONS = 5
 # we only send one byte to indicate on or off
 SOCKET_BUFFER_SIZE = 1
+# the number of seconds after receiving a message from the other board
+# (telling us that it just turned on) during which we will turn on this
+# board's showing machinery. i.e. we display with this board if the other
+# board has sent a message less than SOCKET_RECEIVE_ON_TIME_THRESHOLD
+# seconds. This keeps projection on this board in "on" state for at least
+# (SOCKET_RECEIVE_ON_TIME_THRESHOLD seconds) time.
+SOCKET_RECEIVE_ON_TIME_THRESHOLD = 5
 
 ################################################################################
 # GPIO globals
@@ -33,9 +40,11 @@ GPIO_PIN = 18
 # TIMING globals
 ################################################################################
 # timer on state duration
-ON_SECONDS = 120
+# ON_SECONDS = 120
+ON_SECONDS = 5
 # timer off state duration
-OFF_SECONDS = 900
+# OFF_SECONDS = 900
+OFF_SECONDS = 6000
 
 class AvgFramesOnButton:
     """average frames"""
@@ -130,9 +139,9 @@ class AvgFramesOnButton:
 
         # determine whether our timer module is currrently on or not
         # and whether it just switched states (since the last time we checked)
-        bTimerIsOn, bJustSwitched = self.timer.is_on()
+        timer_is_on, bJustSwitched = self.timer.is_on()
 
-        if bTimerIsOn:
+        if timer_is_on:
             timerState = "ON"
         else:
             timerState = "OFF"
@@ -142,7 +151,10 @@ class AvgFramesOnButton:
             print "{}\tTimer: turning system {}".format(
                 timeNow, timerState)
 
-        if gpio_state == 1 and not bTimerIsOn:
+        delta_message_time = time.time()-self.last_socket_receive_time
+        message_is_on = delta_message_time > SOCKET_RECEIVE_ON_TIME_THRESHOLD
+
+        if gpio_state == 1 and not timer_is_on and not message_is_on:
             # DISENGAGED
             frame = self.no_activity_frame
         else:
