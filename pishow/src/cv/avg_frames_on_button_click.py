@@ -148,13 +148,17 @@ class AvgFramesOnButton:
 
         if bJustSwitched:
             print "[2] last data: %s" % self.last_socket_data
+
             print "{}\tTimer: turning system {}".format(
                 timeNow, timerState)
 
-        delta_message_time = time.time()-self.last_socket_receive_time
-        message_is_on = delta_message_time > SOCKET_RECEIVE_ON_TIME_THRESHOLD
+        if self.last_socket_receive_time is not None:
+            delta_message_time = time.time()-self.last_socket_receive_time
+        else:
+            delta_message_time = float('inf')
+        got_message_on = delta_message_time > SOCKET_RECEIVE_ON_TIME_THRESHOLD
 
-        if gpio_state == 1 and not timer_is_on and not message_is_on:
+        if gpio_state == 1 and not timer_is_on and not got_message_on:
             # DISENGAGED
             frame = self.no_activity_frame
         else:
@@ -170,6 +174,5 @@ class AvgFramesOnButton:
         return cv2.resize(frame, self.fullscreen_size)
 
 
-if __name__ == "__main__":
-    (looper.parse_command_line(AvgFramesOnButton()))()
+
     cv2.destroyAllWindows()
