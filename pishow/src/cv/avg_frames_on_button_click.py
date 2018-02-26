@@ -40,12 +40,9 @@ GPIO_PIN = 18
 # TIMING globals
 ################################################################################
 # timer on state duration
-# ON_SECONDS = 120
-ON_SECONDS = 2
+ON_SECONDS = 18
 # timer off state duration
-# OFF_SECONDS = 900
-# OFF_SECONDS = 6000
-OFF_SECONDS = 20
+OFF_SECONDS = 6000
 
 class AvgFramesOnButton:
     """average frames"""
