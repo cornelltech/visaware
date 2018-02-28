@@ -29,7 +29,7 @@ SOCKET_BUFFER_SIZE = 1
 # board has sent a message less than SOCKET_RECEIVE_TIME_THRESHOLD
 # seconds. This keeps projection on this board in "on" state for at least
 # (SOCKET_RECEIVE_TIME_THRESHOLD seconds) time.
-SOCKET_RECEIVE_TIME_THRESHOLD = 5.0
+SOCKET_RECEIVE_TIME_THRESHOLD = 60.0
 
 ################################################################################
 # GPIO globals
@@ -40,9 +40,9 @@ GPIO_PIN = 18
 # TIMING globals
 ################################################################################
 # timer on state duration
-ON_SECONDS = 18
+ON_SECONDS = 120
 # timer off state duration
-OFF_SECONDS = 6000
+OFF_SECONDS = 3480
 
 class AvgFramesOnButton:
     """average frames"""
