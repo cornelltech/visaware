@@ -48,7 +48,7 @@ TIMER_OFF_SECONDS = 3480
 # Time-related globals
 ################################################################################
 
-MIN_SECONDS_ON = 60
+MIN_SECONDS_ON = 3
 
 class AvgFramesOnButton:
     """average frames"""
@@ -60,6 +60,9 @@ class AvgFramesOnButton:
         self.avg_frames = avg_frames.AvgFrames()
         self.no_activity_frame = None
         self.last_gpio_state = None
+
+        # the state we're in, either 'on' or 'off'
+        self.state = 0
 
         if socket.gethostname() == "pishow-150":
             self.fullscreen_size = (1280, 1024)
@@ -131,11 +134,23 @@ class AvgFramesOnButton:
 
         timeNow = datetime.datetime.now()
 
+        turned_off_too_soon = False
         if self.last_gpio_state != gpio_state:
             # we have changed GPIO state - toggled the switch just now
             # either we changed from on to off or vice versa
             print "[1] last data: %s" % self.last_socket_data
+
+            delta_time = time.time() - self.state
+            if delta_time < MIN_SECONDS_ON:
+                turned_off_too_soon = True
+                print 'TURNED OFF TOO SOON: (only %s seconds on)' % delta_time
+
+
+            print "[3a] self.state: %s" % self.state
             print "%s\t%s" % (timeNow, gpio_state)
+
+            # keep track of the last time we switched gpio state
+            self.last_gpio_switch_time = time.time()
 
             # only in the case of having just turned on (gpio__state == 0)
             # do we tell the other board, because in that case we want the
@@ -153,6 +168,7 @@ class AvgFramesOnButton:
 
         if just_switched:
             print "[2] last data: %s" % self.last_socket_data
+            print "[3b] self.state: %s" % self.state
             print "{}\tTimer: turning system {}".format(
                 timeNow, timer_state)
 
@@ -165,14 +181,20 @@ class AvgFramesOnButton:
         received_on_message = (time_since_message_arrived <
                                SOCKET_RECEIVE_TIME_THRESHOLD)
 
-        if( gpio_state == 1 and 
-            not timer_is_on and 
-            not received_on_message):
+        if (gpio_state == 1 and
+            not timer_is_on and
+            not received_on_message and
+            not turned_off_too_soon):
             # DISENGAGED
             frame = self.no_activity_frame
+            self.state = 0
         else:
             # ENGAGED
             frame = self.avg_frames.apply(frame)
+            if self.state == 0:
+                # this ensures that only when we switch from state 0 to
+                # an on state we will record self.state
+                self.state = time.time()
 
         # time.sleep(0.1)
 
