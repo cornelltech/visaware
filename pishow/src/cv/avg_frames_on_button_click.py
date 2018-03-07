@@ -37,24 +37,31 @@ SOCKET_RECEIVE_TIME_THRESHOLD = 60.0
 GPIO_PIN = 18
 
 ################################################################################
-# TIMING globals
+# TIMER-related globals
 ################################################################################
 # timer on state duration
-ON_SECONDS = 120
+TIMER_ON_SECONDS = 120
 # timer off state duration
-OFF_SECONDS = 3480
+TIMER_OFF_SECONDS = 3480
+
+################################################################################
+# Time-related globals
+################################################################################
+
+MIN_SECONDS_ON = 60
 
 class AvgFramesOnButton:
     """average frames"""
 
     def __init__(self):
         """constructor"""
-        self.timer = on_off_timer.OnOffTimer(ON_SECONDS, OFF_SECONDS)
+        self.timer = on_off_timer.OnOffTimer(TIMER_ON_SECONDS,
+                                             TIMER_OFF_SECONDS)
         self.avg_frames = avg_frames.AvgFrames()
         self.no_activity_frame = None
         self.last_gpio_state = None
-        hostname = socket.gethostname()
-        if hostname == "pishow-150":
+
+        if socket.gethostname() == "pishow-150":
             self.fullscreen_size = (1280, 1024)
             self.hostname_to_message = "pishow-130"
         else:
@@ -146,17 +153,21 @@ class AvgFramesOnButton:
 
         if just_switched:
             print "[2] last data: %s" % self.last_socket_data
-
             print "{}\tTimer: turning system {}".format(
                 timeNow, timer_state)
 
         if self.last_socket_receive_time is not None:
-            time_since_message_arrived = time.time()-self.last_socket_receive_time
+            time_since_message_arrived = (time.time()-
+                                          self.last_socket_receive_time)
         else:
             time_since_message_arrived = float('inf')
-        received_on_message = time_since_message_arrived < SOCKET_RECEIVE_TIME_THRESHOLD
 
-        if gpio_state == 1 and not timer_is_on and not received_on_message:
+        received_on_message = (time_since_message_arrived <
+                               SOCKET_RECEIVE_TIME_THRESHOLD)
+
+        if( gpio_state == 1 and 
+            not timer_is_on and 
+            not received_on_message):
             # DISENGAGED
             frame = self.no_activity_frame
         else:
