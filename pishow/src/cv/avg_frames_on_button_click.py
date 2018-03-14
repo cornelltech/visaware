@@ -63,7 +63,7 @@ class AvgFramesOnButton:
         self.timer = on_off_timer.OnOffTimer(TIMER_ON_SECONDS,
                                              TIMER_OFF_SECONDS)
         self.avg_frames = avg_frames.AvgFrames()
-        self.no_activity_frame = None
+        # self.no_activity_frame = None
         self.last_gpio_state = None
 
         # the state we're in, either 'on' or 'off'
@@ -130,10 +130,10 @@ class AvgFramesOnButton:
     def apply(self, frame):
         """returns avg of all frames after updating with weighted frame"""
         # if self.no_activity_frame is None and frame is not None:
-        if self.no_activity_frame is None:
-            # initialize blank (no activity) frame if haven"t done so already
-            # (this only happens once at the start)
-            self.no_activity_frame = numpy.zeros(frame.shape)
+        # if self.no_activity_frame is None:
+        #     # initialize blank (no activity) frame if haven"t done so already
+        #     # (this only happens once at the start)
+        #     self.no_activity_frame = numpy.zeros(frame.shape)
 
         gpio_state = GPIO.input(GPIO_PIN)
 
