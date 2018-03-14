@@ -49,11 +49,17 @@ TIMER_OFF_SECONDS = 3480
 
 MIN_SECONDS_ON = 45
 
+SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/cv/splash.jpg'
+
+
 class AvgFramesOnButton:
     """average frames"""
 
     def __init__(self):
         """constructor"""
+
+        self.no_activity_frame = cv2.imread(SPLASH_IMAGE_PATH)
+
         self.timer = on_off_timer.OnOffTimer(TIMER_ON_SECONDS,
                                              TIMER_OFF_SECONDS)
         self.avg_frames = avg_frames.AvgFrames()
