@@ -13,7 +13,6 @@ import socket
 import on_off_timer
 from threading import Thread
 
-
 ################################################################################
 # Socket (full-duplex) communication globals (code here is the server code)
 ################################################################################
@@ -48,7 +47,7 @@ TIMER_OFF_SECONDS = 3480
 # Time-related globals
 ################################################################################
 
-MIN_SECONDS_ON = 3
+MIN_SECONDS_ON = 45
 
 class AvgFramesOnButton:
     """average frames"""
@@ -155,7 +154,7 @@ class AvgFramesOnButton:
             # only in the case of having just turned on (gpio__state == 0)
             # do we tell the other board, because in that case we want the
             # other board to turn on too
-            self.tell_other_i_just_turned_on()
+            # self.tell_other_i_just_turned_on()
 
         # determine whether our timer module is currrently on or not
         # and whether it just switched states (since the last time we checked)
@@ -183,15 +182,27 @@ class AvgFramesOnButton:
 
         if (gpio_state == 1 and
             not timer_is_on and
-            not received_on_message and
-            not turned_off_too_soon):
+            not received_on_message):
             # DISENGAGED
-            frame = self.no_activity_frame
-            self.state = 0
+            if self.state != 0:
+                delta_time = time.time() - self.state
+                if delta_time < MIN_SECONDS_ON:
+                    print('TURNED OFF TOO SOON: (only %s seconds on)' % 
+                          delta_time)
+                    frame = self.avg_frames.apply(frame)
+                else:
+                    print 'SWITCHING STATE from 1 to 0 (DISENGAGE)'
+                    frame = self.no_activity_frame
+                    self.state = 0
+            else:
+                frame = self.no_activity_frame                
         else:
             # ENGAGED
             frame = self.avg_frames.apply(frame)
             if self.state == 0:
+                print 'SWITCHING STATE from 0 to 1 (ENGAGE)'
+                self.tell_other_i_just_turned_on()
+
                 # this ensures that only when we switch from state 0 to
                 # an on state we will record self.state
                 self.state = time.time()
