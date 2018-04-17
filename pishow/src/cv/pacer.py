@@ -1,41 +1,44 @@
 #!/usr/bin/env python
 """pacer.py - paced operations"""
 
+import datetime
 import time
 import unittest
 from fps import FPS
-import datetime
 
 
-class Pacer:
+class Pacer(object):
+    """
+    Class to enforce a specific FPS by sleeping, if necessary, between frames
+    """
     def __init__(self, desiredFPS):
         """constructor"""
-        self.startTime = None
-        self.lastUpdateTime = None
-        self.desiredPeriod = 1.0/desiredFPS
-        self.updateError = 0
+        self.start_time = None
+        self.last_update_time = None
+        self.desired_period = 1.0/desiredFPS
+        self.update_error = 0
 
     def start(self):
         """call once, before the loop starts"""
-        self.startTime = time.time()
-        self.lastUpdateTime = self.startTime
+        self.start_time = time.time()
+        self.last_update_time = self.start_time
         return self
 
     def update(self):
         """called on each loop iteration, blocks till time is due"""
         now = time.time()
-        elapsed = now-self.lastUpdateTime
-        deltaTime = self.desiredPeriod-elapsed+self.updateError
+        elapsed = now-self.last_update_time
+        delta_time = self.desired_period-elapsed+self.update_error
 
-        if deltaTime > 0:
+        if delta_time > 0:
             # too fast, sleep to wait out full period
-            self.updateError = deltaTime
-            time.sleep(deltaTime)
+            self.update_error = delta_time
+            time.sleep(delta_time)
         else:
-            # too slow, fix the updateError so that next time we sleep less
-            self.updateError = 0
-            
-        self.lastUpdateTime = now
+            # too slow, fix the update_error so that next time we sleep less
+            self.update_error = 0
+
+        self.last_update_time = now
 
 class ModuleTests(unittest.TestCase):
     """module tests"""
@@ -45,7 +48,7 @@ class ModuleTests(unittest.TestCase):
         fps = FPS().start()
         pacer = Pacer(DESIRED_FPS).start()
 
-        while fps.nFrames < N_TEST_FRAMES:
+        while fps.n_frames < N_TEST_FRAMES:
             print datetime.datetime.now()
             fps.update()
             pacer.update()
@@ -53,7 +56,7 @@ class ModuleTests(unittest.TestCase):
         fps.stop()
         print "[INFO] elasped time: {:.2f}".format(fps.elapsed())
         print "[INFO] approx. FPS: {:.2f}".format(fps.fps())
-        print "[INFO] nFrames: %i" % fps.nFrames
+        print "[INFO] n_frames: %i" % fps.n_frames
 
 
 if __name__ == "__main__":
