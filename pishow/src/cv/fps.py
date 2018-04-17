@@ -70,7 +70,7 @@ class ModuleTests(unittest.TestCase):
         can we instantiate?
         """
 
-        print "[INFO] FPS period: {:.4f}".format(TEST_SLEEP)
+        print "[INFO] test sleep period: {:.4f}".format(TEST_SLEEP)
 
         fps = FPS().start()
 
@@ -81,7 +81,7 @@ class ModuleTests(unittest.TestCase):
 
         fps.stop()
         print "[INFO] elasped time: {:.2f}".format(fps.elapsed())
-        print "[INFO] approx. FPS: {:.2f}".format(fps.fps())
+        print "[INFO] FPS (has loop overhead): {:.2f}".format(fps.fps())
 
 
 if __name__ == "__main__":
