@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """webcam_video_stream.py"""
 
 import unittest

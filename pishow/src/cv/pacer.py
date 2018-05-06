@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """pacer.py - paced operations"""
 
 import datetime
@@ -49,14 +49,14 @@ class ModuleTests(unittest.TestCase):
         pacer = Pacer(DESIRED_FPS).start()
 
         while fps.n_frames < N_TEST_FRAMES:
-            print datetime.datetime.now()
+            print(datetime.datetime.now())
             fps.update()
             pacer.update()
 
         fps.stop()
-        print "[INFO] elasped time: {:.2f}".format(fps.elapsed())
-        print "[INFO] approx. FPS: {:.2f}".format(fps.fps())
-        print "[INFO] n_frames: %i" % fps.n_frames
+        print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
+        print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+        print("[INFO] n_frames: %i" % fps.n_frames)
 
 
 if __name__ == "__main__":

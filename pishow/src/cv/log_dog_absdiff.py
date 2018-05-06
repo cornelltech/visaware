@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """log_dog_absdiff.py"""
 
 # this one's just here to show what the original (subsampled) looks like when

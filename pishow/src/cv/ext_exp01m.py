@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import numpy as np
 import cv2
@@ -23,12 +23,12 @@ class Cam():
         cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN,
                                                     cv2.WINDOW_FULLSCREEN)
-        print "camera initialised"
+        print("camera initialised")
 
 
     def start(self):
         self.thread.start()
-        print "camera stream started"
+        print("camera stream started")
 
     def run(self):
         bytes=''

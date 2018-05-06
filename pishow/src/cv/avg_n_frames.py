@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """avg_n_frames.py"""
 
 import cv2
