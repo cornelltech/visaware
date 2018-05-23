@@ -98,7 +98,7 @@ class VideoStreamBase(object):
         """
         pacer = Pacer(DEFAULT_DESIRED_FPS).start()
         while True:
-            if videoStream.stopped or cv2.waitKey(30) & 0xFF == ord("q"):
+            if videoStream.stopped or cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
             frame = videoStream.read()
