@@ -22,7 +22,7 @@ class Cam():
         self.avg = AvgFramesOnButton()
         cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN,
-                                                    cv2.WINDOW_FULLSCREEN)
+                              cv2.WINDOW_FULLSCREEN)
         print("camera initialised")
 
 
@@ -69,5 +69,5 @@ if __name__ == "__main__":
         url = 'http://128.84.84.129:8080/?action=stream'
     else:
         url = 'http://128.84.84.149:8080/?action=stream'
-    cam = Cam(url)
-    cam.start()
+        cam = Cam(url)
+        cam.start()
