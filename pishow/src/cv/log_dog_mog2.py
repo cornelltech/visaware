@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """log_dog_mog2.py"""
 
 # this one's just here to show what the original (subsampled) looks like when

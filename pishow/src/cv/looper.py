@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """looper.py"""
 
 # Main loop and command line argument parsing and image display with FPS

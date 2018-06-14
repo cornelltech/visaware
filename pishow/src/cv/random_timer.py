@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """random_timer.py - like pins-based wall-mounted timers, with randomness"""
 
 import time

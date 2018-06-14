@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """avg_frames_on_button_click.py"""
 
 import datetime
