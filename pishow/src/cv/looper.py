@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """looper.py"""
 
 # Main loop and command line argument parsing and image display with FPS
@@ -30,7 +30,7 @@ def parse_command_line(effect):
     elif n_args == 1:
         arg = sys.argv[1]
         if arg == "-h" or arg == "--help":
-            print usage_message
+            print(usage_message)
             sys.exit(0)
         elif arg[0:4] == "http":
             return lambda: base.VideoStreamBase.generic_looper(
@@ -39,7 +39,7 @@ def parse_command_line(effect):
             return lambda: base.VideoStreamBase.generic_looper(
                 FileVideoStream(arg, NORMALIZED_FPS).start(), effect)
     else:
-        print usage_message
+        print(usage_message)
         raise Exception("Only one argument allowed, you gave %d" % n_args)
 
 

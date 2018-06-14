@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """avg_frames_on_button_click.py"""
 
 import datetime
@@ -117,14 +117,14 @@ class AvgFramesOnButton:
             self.last_socket_data = data
 
     def tell_other_i_just_turned_on(self):
-        print "tell_other_i_just_turned_on(self)"
+        print("tell_other_i_just_turned_on(self)")
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.client_socket.connect((self.hostname_to_message, SOCKET_PORT))
             self.client_socket.send('1')
             self.client_socket.close()
         except:
-            print "UNABLE TO SEND MESSAGE TO %s!" % self.hostname_to_message
+            print("UNABLE TO SEND MESSAGE TO %s!" % self.hostname_to_message)
 
 
     def apply(self, frame):
@@ -143,16 +143,16 @@ class AvgFramesOnButton:
         if self.last_gpio_state != gpio_state:
             # we have changed GPIO state - toggled the switch just now
             # either we changed from on to off or vice versa
-            print "[1] last data: %s" % self.last_socket_data
+            print("[1] last data: %s" % self.last_socket_data)
 
             delta_time = time.time() - self.state
             if delta_time < MIN_SECONDS_ON:
                 turned_off_too_soon = True
-                print 'TURNED OFF TOO SOON: (only %s seconds on)' % delta_time
+                print('TURNED OFF TOO SOON: (only %s seconds on)' % delta_time)
 
 
-            print "[3a] self.state: %s" % self.state
-            print "%s\t%s" % (timeNow, gpio_state)
+            print("[3a] self.state: %s" % self.state)
+            print("%s\t%s" % (timeNow, gpio_state))
 
             # keep track of the last time we switched gpio state
             self.last_gpio_switch_time = time.time()
@@ -172,10 +172,10 @@ class AvgFramesOnButton:
             timer_state = "OFF"
 
         if just_switched:
-            print "[2] last data: %s" % self.last_socket_data
-            print "[3b] self.state: %s" % self.state
-            print "{}\tTimer: turning system {}".format(
-                timeNow, timer_state)
+            print("[2] last data: %s" % self.last_socket_data)
+            print("[3b] self.state: %s" % self.state)
+            print("{}\tTimer: turning system {}".format(
+                timeNow, timer_state))
 
         if self.last_socket_receive_time is not None:
             time_since_message_arrived = (time.time()-
@@ -197,7 +197,7 @@ class AvgFramesOnButton:
                           delta_time)
                     frame = self.avg_frames.apply(frame)
                 else:
-                    print 'SWITCHING STATE from 1 to 0 (DISENGAGE)'
+                    print('SWITCHING STATE from 1 to 0 (DISENGAGE)')
                     frame = self.no_activity_frame
                     self.state = 0
             else:
@@ -206,7 +206,7 @@ class AvgFramesOnButton:
             # ENGAGED
             frame = self.avg_frames.apply(frame)
             if self.state == 0:
-                print 'SWITCHING STATE from 0 to 1 (ENGAGE)'
+                print('SWITCHING STATE from 0 to 1 (ENGAGE)')
                 self.tell_other_i_just_turned_on()
 
                 # this ensures that only when we switch from state 0 to

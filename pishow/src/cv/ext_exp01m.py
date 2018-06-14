@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import numpy as np
 import cv2
@@ -22,13 +22,13 @@ class Cam():
         self.avg = AvgFramesOnButton()
         cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN,
-                                                    cv2.WINDOW_FULLSCREEN)
-        print "camera initialised"
+                              cv2.WINDOW_FULLSCREEN)
+        print("camera initialised")
 
 
     def start(self):
         self.thread.start()
-        print "camera stream started"
+        print("camera stream started")
 
     def run(self):
         bytes=''
@@ -69,5 +69,5 @@ if __name__ == "__main__":
         url = 'http://128.84.84.129:8080/?action=stream'
     else:
         url = 'http://128.84.84.149:8080/?action=stream'
-    cam = Cam(url)
-    cam.start()
+        cam = Cam(url)
+        cam.start()

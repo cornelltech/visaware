@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """random_timer.py - like pins-based wall-mounted timers, with randomness"""
 
 import time
@@ -38,4 +38,4 @@ class RandomTimer(object):
         self.update()
 
 if __name__ == '__main__':
-    print 'hello'
+    print('hello')

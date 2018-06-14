@@ -3,9 +3,6 @@
 This repository contains all source code for our visual awareness
 experiments.
 
-## System spects
-This section contains some quick info about how the system is set up.
-
 ## Contents
 
 This section of this README file describes how files are arranged in

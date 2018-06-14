@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """gray.py"""
 
 # this one's just here to show what the original (subsampled) looks like when
