@@ -28,12 +28,15 @@ from on_off_timer import OnOffTimer
 # IP number of (the other) pishow we are messaging.
 HOST_IP_TO_MESSAGE = '128.84.84.130'
 
+# URL of pisee (or ip-cam) camera stream
+IP_CAM_URL = "http://128.84.84.129:8080/?action=stream"
+
 ################################################################################
 # Visualization related globals
 ################################################################################
 
 # resolution of the monitor or projector we are using
-FULLSCREEN_SIZE = (1280, 1024)
+FULLSCREEN_SIZE = (800, 600)
 # path to image we show when there is no activity
 SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
 
@@ -186,4 +189,4 @@ class AvgFramesOnButtonClick(VideoStreamABC):
 
 
 if __name__ == '__main__':
-    AvgFramesOnButtonClick(cv2.VideoCapture(sys.argv[1])).start()
+    AvgFramesOnButtonClick(cv2.VideoCapture(IP_CAM_URL)).start()
