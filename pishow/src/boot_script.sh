@@ -10,6 +10,11 @@
 
 # The IP of the other pishow board that this board communicates with
 
+################################################################################
+# NB: this is where you set the IP address of the other pishow board to talk to
+IP_CAM_STREAM_URL="http://128.84.84.129:8080/?action=stream"
+################################################################################
+
 setterm -powerdown 0
 
 MY_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -18,9 +23,7 @@ echo $MY_DIR
 
 CMD="$MY_DIR/avg_frames_on_button_click.py"
 
-ARG="http://128.84.84.129:8080/?action=stream"
-
 LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
 
 echo "boot_script.sh: starting..."
-DISPLAY=:0 "$CMD" "$ARG" >> "$LOG_FILE" 2>&1
+DISPLAY=:0 "$CMD" "$IP_CAM_STREAM_URL" >> "$LOG_FILE" 2>&1

@@ -75,7 +75,7 @@ MIN_SECONDS_ON = 45
 class AvgFramesOnButtonClick(VideoStreamABC):
     """Show avg frames when switch is on, otherwise show splash screen"""
     def __init__(self, stream):
-        super().__init__(stream)
+        super().__init__(stream, full_screen=True)
         self.no_activity_frame = cv2.imread(SPLASH_IMAGE_PATH)
         self.timer = OnOffTimer(TIMER_ON_SECONDS, TIMER_OFF_SECONDS)
         self.avg_frames = AvgFrames(stream)
