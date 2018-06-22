@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # This is the script that user pi runs on pishow boot. This starts everything.
@@ -15,5 +14,8 @@ MY_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 CMD="$MY_DIR/avg_frames_on_button_click.py"
 LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
 
-echo "`date +%F` -- boot_script.sh: starting..." >> "$LOG_FILE"
+echo "----------------------------------------------------------" >> "$LOG_FILE"
+echo "`date` - boot_script.sh: starting .." >> "$LOG_FILE"
+echo "----------------------------------------------------------" >> "$LOG_FILE"
+
 DISPLAY=:0 "$CMD" >> "$LOG_FILE" 2>&1

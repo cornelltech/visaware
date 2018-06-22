@@ -1,0 +1,1 @@
+../../../opencv-video-loops/src/log_dog.py

@@ -26,7 +26,7 @@ from on_off_timer import OnOffTimer
 # pishow (CX lab):            128.84.84.150
 
 # IP number of (the other) pishow we are messaging.
-HOST_IP_TO_MESSAGE = '128.84.84.130'
+HOST_IP_TO_MESSAGE = '128.84.84.150'
 
 # URL of pisee (or ip-cam) camera stream
 IP_CAM_URL = "http://128.84.84.129:8080/?action=stream"
