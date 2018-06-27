@@ -9,6 +9,13 @@
 # @lxterminal --command="/home/pi/workspace/visaware/pishow/src/boot_script.sh"
 
 ################################################################################
+
+# NOTE: feel free to change anything beteen the hash character borders
+
+# full-screen width & height of projector
+WIDTH="800"
+HEIGHT="600"
+
 # The IP numbers (you may need to change these three ip-numbers)
 
 # NOTE: IP numbers we use for testing:
@@ -44,10 +51,12 @@ CMD="$MY_DIR/avg_frames_on_button_click.py"
 
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 echo "`date` - boot_script.sh: starting .." >> "$LOG_FILE"
+echo "Fullscreen size: ${WIDTH}x$HEIGHT" >> "$LOG_FILE"
 echo "My (pishow) IP: $MY_IP" >> "$LOG_FILE"
 echo "Other (pishow) IP: $OTHER_IP" >> "$LOG_FILE"
 echo "Webcam URL: $WEBCAM_URL" >> "$LOG_FILE"
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 
 setterm -powerdown 0
-DISPLAY=:0 "$CMD" "$MY_IP" "$OTHER_IP" "$WEBCAM_URL" >> "$LOG_FILE" 2>&1
+DISPLAY=:0 "$CMD" "$MY_IP" "$OTHER_IP" "$WEBCAM_URL" "$WIDTH" "$HEIGHT" \
+       >> "$LOG_FILE" 2>&1

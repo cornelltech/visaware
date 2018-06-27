@@ -13,25 +13,9 @@ from on_off_timer import OnOffTimer
 
 
 ################################################################################
-# Networking globals
-################################################################################
-
-# NB: all communication is only between local and remote pishow boards
-
-# At the Cornell Tech campus we have the following IP setup:
-
-# IP number of (the other) pishow we are messaging.
-# HOST_IP_TO_MESSAGE = '128.84.84.150'
-
-# URL of pisee (or ip-cam) camera stream
-# IP_CAM_URL = "http://128.84.84.149:8080/?action=stream"
-
-################################################################################
 # Visualization related globals
 ################################################################################
 
-# resolution of the monitor or projector we are using
-FULLSCREEN_SIZE = (1024, 768)
 # path to image we show when there is no activity
 SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
 
@@ -72,14 +56,17 @@ MIN_SECONDS_ON = 45
 
 class AvgFramesOnButtonClick(VideoStreamABC):
     """Show avg frames when switch is on, otherwise show splash screen"""
-    def __init__(self, my_ip, other_ip, webcam_url):
-        stream = cv2.VideoCapture(webcam_url)
-        super().__init__(stream, full_screen=True)
-        self.my_ip = my_ip
-        self.other_ip = other_ip
+    def __init__(self, arguments):
+        self.my_ip = arguments[1]
+        self.other_ip = arguments[2]
+        self.webcam_url = arguments[3]
+        self.fullscreen_size = (int(arguments[4]), int(arguments[5]))
+
+        super().__init__(self.webcam_url, full_screen=True)
+
         self.no_activity_frame = cv2.imread(SPLASH_IMAGE_PATH)
         self.timer = OnOffTimer(TIMER_ON_SECONDS, TIMER_OFF_SECONDS)
-        self.avg_frames = AvgFrames(stream)
+        self.avg_frames = AvgFrames(None)
         self.state = 0
 
         # GPIO setup
@@ -129,35 +116,31 @@ class AvgFramesOnButtonClick(VideoStreamABC):
 
         received_on_message = (time_since_message_arrived <
                                SOCKET_RECEIVE_TIME_THRESHOLD)
-
         if gpio_state == 1 and not timer_is_on and not received_on_message:
             if self.state != 0:
                 delta_time = time.time() - self.state
                 if delta_time < MIN_SECONDS_ON:
                     frame = self.avg_frames.process_frame(frame)
                 else:
-                    print('DISENGAGE (DELTA_TIME > %ds)' %
-                          MIN_SECONDS_ON)
+                    print('DISENGAGE (DELTA_TIME > %ds)' % MIN_SECONDS_ON)
                     frame = self.no_activity_frame
                     self.state = 0
             else:
+
                 frame = self.no_activity_frame
         else:
             frame = self.avg_frames.process_frame(frame)
             if self.state == 0:
                 print('ENGAGE (STEPPED ON MAT)')
                 self.tell_other_i_just_turned_on()
-
                 # this ensures that only when we switch from state 0 to
                 # an on state we will record self.state
                 self.state = time.time()
-
-        sys.stdout.flush()
-
-        return cv2.resize(frame, FULLSCREEN_SIZE)
+        # sys.stdout.flush()
+        return cv2.resize(frame, self.fullscreen_size)
 
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    AvgFramesOnButtonClick(sys.argv[1], sys.argv[2], sys.argv[3]).start()
+    AvgFramesOnButtonClick(sys.argv).start()
