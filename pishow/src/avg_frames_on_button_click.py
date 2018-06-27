@@ -102,7 +102,7 @@ class AvgFramesOnButtonClick(VideoStreamABC):
     def server_socket_thread_worker(self):
         """Socket listening thread main loop"""
         while True:
-            data, addr = sock.recvfrom(1)
+            data, addr = self.server_socket.recvfrom(1)
             self.last_socket_receive_time = time.time()
             time.sleep(SOCKET_SERVER_THREAD_SLEEP)
 
