@@ -9,10 +9,6 @@
 # @lxterminal --command="/home/pi/workspace/visaware/pishow/src/boot_script.sh"
 
 ################################################################################
-
-# The port for socket communications
-SOCKET_PORT="5005"
-
 # The IP numbers (you may need to change these three ip-numbers)
 
 # NOTE: IP numbers we use for testing:
@@ -38,7 +34,6 @@ MY_IP="128.84.84.130"
 OTHER_IP="128.84.84.150"
 # WEBCAM_URL is the full URL of the pisee board or any webcam used near OTHER_IP
 WEBCAM_URL="http://128.84.84.149:8080/?action=stream"
-
 ################################################################################
 
 # Do not change anything below
@@ -52,4 +47,4 @@ echo "`date` - boot_script.sh: starting .." >> "$LOG_FILE"
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 
 setterm -powerdown 0
-DISPLAY=:0 "$CMD $MY_IP $OTHER_IP $WEBCAM_URL $SOCKET_PORT" >> "$LOG_FILE" 2>&1
+DISPLAY=:0 "$CMD $MY_IP $OTHER_IP $WEBCAM_URL" >> "$LOG_FILE" 2>&1
