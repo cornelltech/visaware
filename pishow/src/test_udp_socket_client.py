@@ -2,7 +2,7 @@
 
 import socket
 
-HOST = '127.0.0.1'
+HOST = '128.84.84.150'
 PORT = 5050
 
 def main(sock):

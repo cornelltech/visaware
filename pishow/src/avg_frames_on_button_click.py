@@ -20,16 +20,11 @@ from on_off_timer import OnOffTimer
 
 # At the Cornell Tech campus we have the following IP setup:
 
-# pisee (near Benny's desk):  128.84.84.129
-# pishow (near Benny's desk): 128.84.84.130
-# pisee (CX lab):             128.84.84.149
-# pishow (CX lab):            128.84.84.150
-
 # IP number of (the other) pishow we are messaging.
-HOST_IP_TO_MESSAGE = '128.84.84.150'
+# HOST_IP_TO_MESSAGE = '128.84.84.150'
 
 # URL of pisee (or ip-cam) camera stream
-IP_CAM_URL = "http://128.84.84.149:8080/?action=stream"
+# IP_CAM_URL = "http://128.84.84.149:8080/?action=stream"
 
 ################################################################################
 # Visualization related globals
@@ -46,8 +41,6 @@ SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
 
 # One pishow (this one) is the socket server, the other pishow is socket client.
 SOCKET_PORT = 5005
-# 1 should be enough for SOCKET_MAX_QUEUED_CONNECTIONS - try it
-SOCKET_MAX_QUEUED_CONNECTIONS = 5
 # we only send one byte at a time
 SOCKET_BUFFER_SIZE = 1
 # the number of seconds after receiving a message from the other board
@@ -57,6 +50,8 @@ SOCKET_BUFFER_SIZE = 1
 # seconds. This keeps projection on this board in "on" state for at least
 # (SOCKET_RECEIVE_TIME_THRESHOLD seconds) time.
 SOCKET_RECEIVE_TIME_THRESHOLD = 60.0
+# how long to sleep between each time you listen to a socket
+SOCKET_SERVER_THREAD_SLEEP = 0.1
 
 ################################################################################
 # GPIO-related globals
@@ -75,14 +70,13 @@ TIMER_OFF_SECONDS = 3480
 # minimum duration to show the other side pisee
 MIN_SECONDS_ON = 45
 
-def eprint(*args, **kwargs):
-    """Same as print but goes to stderr"""
-    print(*args, file=sys.stderr, **kwargs)
-
 class AvgFramesOnButtonClick(VideoStreamABC):
     """Show avg frames when switch is on, otherwise show splash screen"""
-    def __init__(self, stream):
+    def __init__(self, my_ip, other_ip, webcam_url):
+        stream = cv2.VideoCapture(webcam_url)
         super().__init__(stream, full_screen=True)
+        self.my_ip = my_ip
+        self.other_ip = other_ip
         self.no_activity_frame = cv2.imread(SPLASH_IMAGE_PATH)
         self.timer = OnOffTimer(TIMER_ON_SECONDS, TIMER_OFF_SECONDS)
         self.avg_frames = AvgFrames(stream)
@@ -93,19 +87,14 @@ class AvgFramesOnButtonClick(VideoStreamABC):
         GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # Start socket listening
-        self.client_socket = None
-        self.server_socket = None
-        self.server_socket_thread_stopped = True
-        self.last_socket_data = None
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.last_socket_receive_time = None
         self.start_server_socket_thread()
 
     def start_server_socket_thread(self):
         """Start thread that listens on a socket"""
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind(("", SOCKET_PORT))
-        self.server_socket.listen(SOCKET_MAX_QUEUED_CONNECTIONS)
-        self.server_socket_thread_stopped = False
+        self.server_socket.bind((self.my_ip, SOCKET_PORT))
         thread = Thread(target=self.server_socket_thread_worker, args=())
         thread.daemon = True
         thread.start()
@@ -113,33 +102,16 @@ class AvgFramesOnButtonClick(VideoStreamABC):
     def server_socket_thread_worker(self):
         """Socket listening thread main loop"""
         while True:
-            if self.server_socket_thread_stopped:
-                return
-
-            time.sleep(0.1)
-            #pylint: disable=unused-variable
-            (my_clients_socket, address) = self.server_socket.accept()
-            #pylint: enable=unused-variable
-            # do something with client_socket: try to receive one byte
-            data = my_clients_socket.recv(1)
+            data, addr = sock.recvfrom(1)
             self.last_socket_receive_time = time.time()
-            self.last_socket_data = data
+            time.sleep(SOCKET_SERVER_THREAD_SLEEP)
 
     def tell_other_i_just_turned_on(self):
         """Send message telling other pishow that I've just started"""
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        try:
-            self.client_socket.connect((HOST_IP_TO_MESSAGE, SOCKET_PORT))
-            self.client_socket.send(b'1')
-            self.client_socket.close()
-        except ConnectionRefusedError as err:
-            eprint('Client Socket Error: Connection refused, cannot send msg.')
-            eprint("Caught error: ", sys.exc_info()[0])
+        self.client_socket.sendto(b'1', (self.other_ip, SOCKET_PORT))
  
     def process_frame(self, frame):
         """Returns average of all frames after updating with weighted frame"""
-
         gpio_state = GPIO.input(GPIO_PIN)
 
         # determine whether our timer module is currrently on or not
@@ -180,8 +152,6 @@ class AvgFramesOnButtonClick(VideoStreamABC):
                 # an on state we will record self.state
                 self.state = time.time()
 
-        # time.sleep(0.1)
-
         sys.stdout.flush()
 
         return cv2.resize(frame, FULLSCREEN_SIZE)
@@ -191,10 +161,6 @@ class AvgFramesOnButtonClick(VideoStreamABC):
 
 if __name__ == '__main__':
     try:
-        AvgFramesOnButtonClick(cv2.VideoCapture(IP_CAM_URL)).start()
-    # except IOError as (errno, strerror):
-    #     print("IO Error ({0}): {1}".format(errno, strerror)
-    # except ValueError, e:
-    #     print("ValueError: {0}".format(e)
+        AvgFramesOnButtonClick(sys.argv[1], sys.argv[2], sys.argv[3]).start()
     except:
-        print("Caught error: ", sys.exc_info()[0])
+        print("Uncaught error: ", sys.exc_info()[0])
