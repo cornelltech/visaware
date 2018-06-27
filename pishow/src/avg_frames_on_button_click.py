@@ -160,7 +160,4 @@ class AvgFramesOnButtonClick(VideoStreamABC):
 
 
 if __name__ == '__main__':
-    try:
-        AvgFramesOnButtonClick(sys.argv[1], sys.argv[2], sys.argv[3]).start()
-    except:
-        print("Uncaught error: ", sys.exc_info()[0])
+    AvgFramesOnButtonClick(sys.argv[1], sys.argv[2], sys.argv[3]).start()
