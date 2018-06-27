@@ -29,14 +29,14 @@ from on_off_timer import OnOffTimer
 HOST_IP_TO_MESSAGE = '128.84.84.150'
 
 # URL of pisee (or ip-cam) camera stream
-IP_CAM_URL = "http://128.84.84.129:8080/?action=stream"
+IP_CAM_URL = "http://128.84.84.149:8080/?action=stream"
 
 ################################################################################
 # Visualization related globals
 ################################################################################
 
 # resolution of the monitor or projector we are using
-FULLSCREEN_SIZE = (800, 600)
+FULLSCREEN_SIZE = (1024, 768)
 # path to image we show when there is no activity
 SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
 
@@ -74,6 +74,10 @@ TIMER_ON_SECONDS = 120
 TIMER_OFF_SECONDS = 3480
 # minimum duration to show the other side pisee
 MIN_SECONDS_ON = 45
+
+def eprint(*args, **kwargs):
+    """Same as print but goes to stderr"""
+    print(*args, file=sys.stderr, **kwargs)
 
 class AvgFramesOnButtonClick(VideoStreamABC):
     """Show avg frames when switch is on, otherwise show splash screen"""
@@ -125,17 +129,14 @@ class AvgFramesOnButtonClick(VideoStreamABC):
         """Send message telling other pishow that I've just started"""
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        self.client_socket.connect((HOST_IP_TO_MESSAGE, SOCKET_PORT))
-        self.client_socket.send(b'1')
-        self.client_socket.close()
-
-        # try:
-        #     self.client_socket.connect((HOST_IP_TO_MESSAGE, SOCKET_PORT))
-        #     self.client_socket.send(b'1')
-        #     self.client_socket.close()
-        # except:
-        #     print("UNABLE TO SEND MESSAGE TO %s!" % HOST_IP_TO_MESSAGE)
-
+        try:
+            self.client_socket.connect((HOST_IP_TO_MESSAGE, SOCKET_PORT))
+            self.client_socket.send(b'1')
+            self.client_socket.close()
+        except ConnectionRefusedError as err:
+            eprint('Client Socket Error: Connection refused, cannot send msg.')
+            eprint("Caught error: ", sys.exc_info()[0])
+ 
     def process_frame(self, frame):
         """Returns average of all frames after updating with weighted frame"""
 
@@ -163,7 +164,7 @@ class AvgFramesOnButtonClick(VideoStreamABC):
                 if delta_time < MIN_SECONDS_ON:
                     frame = self.avg_frames.process_frame(frame)
                 else:
-                    print('DISENGAGE (1->0), BECAUSE DELTA_TIME > %ds' %
+                    print('DISENGAGE (DELTA_TIME > %ds)' %
                           MIN_SECONDS_ON)
                     frame = self.no_activity_frame
                     self.state = 0
@@ -172,7 +173,7 @@ class AvgFramesOnButtonClick(VideoStreamABC):
         else:
             frame = self.avg_frames.process_frame(frame)
             if self.state == 0:
-                print('ENGAGE (0->1), BECAUSE STEPPED ON MAT)')
+                print('ENGAGE (STEPPED ON MAT)')
                 self.tell_other_i_just_turned_on()
 
                 # this ensures that only when we switch from state 0 to
@@ -189,4 +190,11 @@ class AvgFramesOnButtonClick(VideoStreamABC):
 
 
 if __name__ == '__main__':
-    AvgFramesOnButtonClick(cv2.VideoCapture(IP_CAM_URL)).start()
+    try:
+        AvgFramesOnButtonClick(cv2.VideoCapture(IP_CAM_URL)).start()
+    # except IOError as (errno, strerror):
+    #     print("IO Error ({0}): {1}".format(errno, strerror)
+    # except ValueError, e:
+    #     print("ValueError: {0}".format(e)
+    except:
+        print("Caught error: ", sys.exc_info()[0])
