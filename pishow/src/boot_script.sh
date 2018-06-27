@@ -47,4 +47,4 @@ echo "`date` - boot_script.sh: starting .." >> "$LOG_FILE"
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 
 setterm -powerdown 0
-DISPLAY=:0 "$CMD $MY_IP $OTHER_IP $WEBCAM_URL" >> "$LOG_FILE" 2>&1
+DISPLAY=:0 "$CMD" "$MY_IP" "$OTHER_IP" "$WEBCAM_URL" >> "$LOG_FILE" 2>&1
