@@ -44,9 +44,9 @@ CMD="$MY_DIR/avg_frames_on_button_click.py"
 
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 echo "`date` - boot_script.sh: starting .." >> "$LOG_FILE"
-echo "My (pishow) IP: $MY_IP"
-echo "Other (pishow) IP: $OTHER_IP"
-echo "Webcam URL: $WEBCAM_URL"
+echo "My (pishow) IP: $MY_IP" >> "$LOG_FILE"
+echo "Other (pishow) IP: $OTHER_IP" >> "$LOG_FILE"
+echo "Webcam URL: $WEBCAM_URL" >> "$LOG_FILE"
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 
 setterm -powerdown 0
