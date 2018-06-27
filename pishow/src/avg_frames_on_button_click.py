@@ -81,7 +81,12 @@ class AvgFramesOnButtonClick(VideoStreamABC):
 
     def start_server_socket_thread(self):
         """Start thread that listens on a socket"""
-        self.server_socket.bind((self.my_ip, SOCKET_PORT))
+        try:
+            self.server_socket.bind((self.my_ip, SOCKET_PORT))
+        except OSError as os_error:
+            print('Error: cannot bind to own IP. Are you sure %s is my IP?' %
+                  self.my_ip)
+            sys.exit(-1)
         thread = Thread(target=self.server_socket_thread_worker, args=())
         thread.daemon = True
         thread.start()
