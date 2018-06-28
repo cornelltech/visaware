@@ -111,7 +111,7 @@ class AvgFramesOnButtonClick(VideoStreamABC):
         timer_is_on, just_switched = self.timer.is_on()
 
         if just_switched:
-            print('Just switched!')
+            print('Timer just switched state.')
 
         if self.last_socket_receive_time is not None:
             time_since_message_arrived = (time.time()-
@@ -121,6 +121,7 @@ class AvgFramesOnButtonClick(VideoStreamABC):
 
         received_on_message = (time_since_message_arrived <
                                SOCKET_RECEIVE_TIME_THRESHOLD)
+
         if gpio_state == 1 and not timer_is_on and not received_on_message:
             if self.state != 0:
                 delta_time = time.time() - self.state
