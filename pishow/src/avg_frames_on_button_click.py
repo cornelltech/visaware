@@ -4,10 +4,11 @@
 import sys
 import time
 import socket
-from threading import Thread
+import requests
+from threading import Thread, ThreadError
 import RPi.GPIO as GPIO
 import cv2
-from video_stream_abc import VideoStreamABC
+import numpy as np
 from avg_frames import AvgFrames
 from on_off_timer import OnOffTimer
 
@@ -15,6 +16,8 @@ from on_off_timer import OnOffTimer
 ################################################################################
 # Visualization related globals
 ################################################################################
+
+WINDOW_NAME = 'cam'
 
 # path to image we show when there is no activity
 SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
@@ -54,7 +57,7 @@ TIMER_OFF_SECONDS = 3480
 # minimum duration to show the other side pisee
 MIN_SECONDS_ON = 45
 
-class AvgFramesOnButtonClick(VideoStreamABC):
+class AvgFramesOnButtonClick():
     """Show avg frames when switch is on, otherwise show splash screen"""
     def __init__(self, arguments):
         self.my_ip = arguments[1]
@@ -62,7 +65,9 @@ class AvgFramesOnButtonClick(VideoStreamABC):
         self.webcam_url = arguments[3]
         self.fullscreen_size = (int(arguments[4]), int(arguments[5]))
 
-        super().__init__(self.webcam_url, full_screen=True)
+        cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN,
+                              cv2.WINDOW_FULLSCREEN)
 
         self.no_activity_frame = cv2.imread(SPLASH_IMAGE_PATH)
         self.timer = OnOffTimer(TIMER_ON_SECONDS, TIMER_OFF_SECONDS)
@@ -78,6 +83,47 @@ class AvgFramesOnButtonClick(VideoStreamABC):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.last_socket_receive_time = None
         self.start_server_socket_thread()
+        self.start_cam_thread()
+
+    def start_cam_thread(self):
+        self.stream = requests.get(self.webcam_url, stream=True)
+        self.cam_thread_cancelled = False
+        thread = Thread(target=self.cam_thread)
+        thread.start()
+
+    def cam_thread(self):
+        bytes = b''
+        while not self.cam_thread_cancelled:
+            try:
+                bytes += self.stream.raw.read(1024)
+                a = bytes.find(b'\xff\xd8')
+                b = bytes.find(b'\xff\xd9')
+                if a != -1 and b != -1:
+                    jpg = bytes[a:b+2]
+                    bytes= bytes[b+2:]
+                    img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),
+                                       cv2.IMREAD_COLOR)
+
+                    # here's where we process the frame
+                    img = self.process_frame(img)
+
+                    cv2.imshow(WINDOW_NAME, img)
+                    if cv2.waitKey(1) ==27:
+                        # exit(0)
+                        self.shut_down()
+
+            except ThreadError:
+                self.cam_thread_cancelled = True
+
+    def is_running(self):
+        return self.cam_thread.isAlive()
+
+    def shut_down(self):
+        self.cam_thread_cancelled = True
+        # block while waiting for thread to terminate
+        while self.is_running():
+            time.sleep(1)
+        return True
 
     def start_server_socket_thread(self):
         """Start thread that listens on a socket"""
