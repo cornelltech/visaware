@@ -13,10 +13,11 @@ NO_LESS_THAN = 10000
 # a silhouette cannot be closer than INNER_MARGIN pixels from the border
 INNER_MARGIN = 10
 
+MOTION_NNZ_THRESH = 100
+
 
 class MaxKNN(Gray):
     """KNN background subtraction"""
-
     def __init__(self, stream, *args, **kwargs):
         super().__init__(stream, *args, **kwargs)
         self.fgbg = cv2.createBackgroundSubtractorKNN(10, 500.0, False)
@@ -50,12 +51,6 @@ class MaxKNN(Gray):
 
         return knn_img
 
-    def __del__(self):
-        print('/ max_i: ', self.max_i)
-        # cv2.imshow('max_img', self.max_img)
-        cv2.imwrite('max.png', self.max_img)
-        # cv2.waitKey(0)
-
 
 if __name__ == '__main__':
-    MaxKNN(cv2.VideoCapture(sys.argv[1])).start()
+    MaxKNN(sys.argv[1]).start()
