@@ -4,6 +4,7 @@
 import time
 import sys
 import cv2
+import numpy as np
 from gray import Gray
 
 
@@ -37,6 +38,12 @@ class MaxKNN(Gray):
         self.max_i = 0
         self.max_img = None
         self.i_frame = 0
+        self.disp_img = None
+
+    def reset(self, frame):
+        """Re-sets self.disp_img"""
+        if self.disp_img is None:
+            self.disp_img = np.zeros(frame.shape)
 
     def process_frame(self, frame):
         """KNN background subtraction"""
@@ -57,10 +64,7 @@ class MaxKNN(Gray):
             if self.moving:
                 print('Motion turns OFF')
                 self.moving = False
-                self.reset()
-
-    def reset(self):
-        
+                self.reset(frame)
 
         return knn_img
 
