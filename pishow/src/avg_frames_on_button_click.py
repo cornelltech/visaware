@@ -143,13 +143,14 @@ class AvgFramesOnButtonClick():
             # the next line is a blocking call
             data, address = self.server_socket.recvfrom(1)
             print('received data: ', data, ', address: ', address)
+            sys.stdout.flush()
             self.last_socket_receive_time = time.time()
             time.sleep(SOCKET_SERVER_THREAD_SLEEP)
 
     def tell_other_i_just_turned_on(self):
         """Send message telling other pishow that I've just started"""
         self.client_socket.sendto(b'1', (self.other_ip, SOCKET_PORT))
- 
+
     def process_frame(self, frame):
         """Returns average of all frames after updating with weighted frame"""
         gpio_state = GPIO.input(GPIO_PIN)
@@ -171,7 +172,9 @@ class AvgFramesOnButtonClick():
                                SOCKET_RECEIVE_TIME_THRESHOLD)
 
         if gpio_state == 1 and not timer_is_on and not received_on_message:
-            if self.state != 0:
+            if self.state == 0:
+                frame = self.no_activity_frame
+            else:
                 delta_time = time.time() - self.state
                 if delta_time < MIN_SECONDS_ON:
                     frame = self.avg_frames.process_frame(frame)
@@ -179,9 +182,6 @@ class AvgFramesOnButtonClick():
                     print('DISENGAGE (DELTA_TIME > %ds)' % MIN_SECONDS_ON)
                     frame = self.no_activity_frame
                     self.state = 0
-            else:
-
-                frame = self.no_activity_frame
         else:
             frame = self.avg_frames.process_frame(frame)
             if self.state == 0:
@@ -190,7 +190,9 @@ class AvgFramesOnButtonClick():
                 # this ensures that only when we switch from state 0 to
                 # an on state we will record self.state
                 self.state = time.time()
-        # sys.stdout.flush()
+
+        sys.stdout.flush()
+
         return cv2.resize(frame, self.fullscreen_size)
 
     cv2.destroyAllWindows()
