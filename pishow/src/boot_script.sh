@@ -27,11 +27,12 @@ HEIGHT="600"
 # Use these numbers on pishow in CX lab:
 
 # MY_IP is the IP number of the pishow board on which this code is running:
-MY_IP="128.84.84.157"
+# NOTE: figures out own IP address automatically, don't edit MY_IP line below.
+MY_IP="`ifconfig | grep -A 1 eth0 | grep inet | awk '{print $2}'`"
 # OTHER_IP is the IP number of the other pishow board this one communicates with
 OTHER_IP="128.84.84.150"
 # WEBCAM_URL is the full URL of the pisee board or any webcam used near OTHER_IP
-WEBCAM_URL="http://128.84.84.129:8080/?action=stream"
+WEBCAM_URL="http://128.84.84.149:8080/?action=stream"
 
 # Use these numbers on pishow near Benny's desk:
 
