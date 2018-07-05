@@ -47,6 +47,7 @@ WEBCAM_URL="http://128.84.84.149:8080/?action=stream"
 # Do not change anything below
 
 MY_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+mkdir -p "/home/pi/logs"
 LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
 CMD="$MY_DIR/avg_frames_on_button_click.py"
 
