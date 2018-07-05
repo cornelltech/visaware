@@ -59,9 +59,8 @@ echo "----------------------------------------------------------" >> "$LOG_FILE"
 
 setterm -powerdown 0
 
-# "${MY_DIR}/log_temperatures.sh" "$LOG_FILE" &
-
-( while true; do vcgencmd measure_temp; sleep 10; done >> "$LOG_FILE" ) &
+# the following line logs board temperature every 10 seconds:
+# ( while true; do vcgencmd measure_temp; sleep 10; done >> "$LOG_FILE" ) &
 
 DISPLAY=:0 "$CMD" "$MY_IP" "$OTHER_IP" "$WEBCAM_URL" "$WIDTH" "$HEIGHT" \
        >> "$LOG_FILE" 2>&1
