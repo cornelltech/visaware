@@ -3,3 +3,4 @@
 @pcmanfm --desktop --profile LXDE-pi
 @point-rpi
 @lxterminal --command="/home/pi/workspace/visaware/pishow/src/boot_script.sh"
+#@xscreensaver -no-splash
