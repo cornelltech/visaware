@@ -140,10 +140,10 @@ class AvgFramesOnButtonClick():
     def server_socket_thread_worker(self):
         """Socket listening thread main loop"""
         while True:
-            bytes, address = self.server_socket.recvfrom(1)
-            if bytes == b'1':
-                print('received data: ', data, ', time: ', time.time())
-                self.last_socket_receive_time = time.time()
+            # the next line is a blocking call
+            data, address = self.server_socket.recvfrom(1)
+            print('received data: ', data, ', address: ', address)
+            self.last_socket_receive_time = time.time()
             time.sleep(SOCKET_SERVER_THREAD_SLEEP)
 
     def tell_other_i_just_turned_on(self):
