@@ -87,13 +87,14 @@ class AvgFramesOnButtonClick():
 
     def start_cam_thread(self):
         self.stream = requests.get(self.webcam_url, stream=True)
-        self.cam_thread_cancelled = False
+        # self.cam_thread_cancelled = False
         thread = Thread(target=self.cam_thread)
         thread.start()
 
     def cam_thread(self):
         bytes = b''
-        while not self.cam_thread_cancelled:
+        # while not self.cam_thread_cancelled:
+        while True:
             try:
                 bytes += self.stream.raw.read(1024)
                 a = bytes.find(b'\xff\xd8')
@@ -112,8 +113,10 @@ class AvgFramesOnButtonClick():
                         # exit(0)
                         self.shut_down()
 
-            except ThreadError:
-                self.cam_thread_cancelled = True
+            except ThreadError as err:
+                print('Camera grabbing thread error: ', err)
+                sys.stdout.flush()
+                # self.cam_thread_cancelled = True
 
     def is_running(self):
         return self.cam_thread.isAlive()
