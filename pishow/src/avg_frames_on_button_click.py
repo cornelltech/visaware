@@ -87,13 +87,11 @@ class AvgFramesOnButtonClick():
 
     def start_cam_thread(self):
         self.stream = requests.get(self.webcam_url, stream=True)
-        # self.cam_thread_cancelled = False
-        thread = Thread(target=self.cam_thread)
+        thread = Thread(target=self.cam_thread_worker)
         thread.start()
 
-    def cam_thread(self):
+    def cam_thread_worker(self):
         bytes = b''
-        # while not self.cam_thread_cancelled:
         while True:
             try:
                 bytes += self.stream.raw.read(1024)
@@ -110,23 +108,13 @@ class AvgFramesOnButtonClick():
 
                     cv2.imshow(WINDOW_NAME, img)
                     if cv2.waitKey(1) ==27:
-                        # exit(0)
-                        self.shut_down()
+                        print('Shutting down because user hit ESC ...')
+                        sys.stdout.flush()
+                        sys.exit(0)
 
             except ThreadError as err:
                 print('Camera grabbing thread error: ', err)
                 sys.stdout.flush()
-                # self.cam_thread_cancelled = True
-
-    def is_running(self):
-        return self.cam_thread.isAlive()
-
-    def shut_down(self):
-        self.cam_thread_cancelled = True
-        # block while waiting for thread to terminate
-        while self.is_running():
-            time.sleep(1)
-        return True
 
     def start_server_socket_thread(self):
         """Start thread that listens on a socket"""
@@ -202,4 +190,4 @@ class AvgFramesOnButtonClick():
 
 
 if __name__ == '__main__':
-    AvgFramesOnButtonClick(sys.argv).start()
+    AvgFramesOnButtonClick(sys.argv)
