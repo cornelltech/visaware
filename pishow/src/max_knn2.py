@@ -26,6 +26,9 @@ MOTION_MIN_NNZ = 100
 # how long do we wait before we start timing things?
 IDLE_START_TIME = 0.5
 
+# vertical margin for drawing
+HEIGHT_MARGIN = 100
+
 class MaxKNN(Gray):
     """KNN background subtraction"""
     def __init__(self, stream, *args, **kwargs):
@@ -36,9 +39,10 @@ class MaxKNN(Gray):
         self.moving = False
         self.max_nnz = 0
         self.max_i = 0
-        self.max_img = None
+        self.subimg = None
         self.i_frame = 0
         self.disp_img = None
+        self.start_x = 0
 
     def reset(self, frame):
         """Re-sets self.disp_img"""
@@ -67,13 +71,13 @@ class MaxKNN(Gray):
            bb_x > INNER_MARGIN and \
            bb_x + bb_w < img_w - INNER_MARGIN:
 
-            print('- found next candidate: ', self.grabbed_frame_num())
+            # print('- found next candidate: ', self.grabbed_frame_num())
             # found the next candidate silhouette to use
             self.max_nnz = nnz
             
             # crop rect into max_img
-            # self.max_img = knn_img.copy()
-            self.max_img = knn_img[bb_y:bb_y + bb_h, bb_x:bb_x+bb_w]
+            # self.subimg = knn_img.copy()
+            self.subimg = knn_img[bb_y:bb_y + bb_h, bb_x:bb_x+bb_w]
 
         if time.time() - self.start_time < IDLE_START_TIME:
             # Do nothing for the first IDLE_START_TIME seconds
@@ -89,11 +93,51 @@ class MaxKNN(Gray):
             if self.moving:
                 print('Motion turns OFF')
                 self.moving = False
-                # self.disp_img = self.max_img
-                rows, cols = self.max_img.shape
-                self.disp_img[10:10+rows, 10:10+cols] = self.max_img
+                # rows, cols = self.subimg.shape
+                # self.disp_img[10:10+rows, 10:10+cols] = self.subimg
+                self.disp_img, self.start_x = self.draw_silhouette(
+                    self.disp_img,
+                    self.subimg,
+                    self.start_x
+                )
 
         return self.disp_img
+
+    def draw_silhouette(self, img, subimg, start_x):
+        """draw_silhouette"""
+        print('draw_silhouette(img, subimg, %d)' % start_x);
+        print('self.start_x: %d' % self.start_x)
+
+        img_shape = img.shape
+        img_height = img_shape[0]
+        img_width = img_shape[1]
+
+        subimg_shape = subimg.shape
+        subimg_height = subimg_shape[0]
+        subimg_width = subimg_shape[1]
+        half_subimg_width = np.floor(0.5 * subimg_width)
+
+        desired_subimg_height = img_height - 2 * HEIGHT_MARGIN
+        if desired_subimg_height != subimg_height:
+            subimg_width = int(
+                desired_subimg_height * subimg_width / subimg_height)
+            subimg_height = int(desired_subimg_height)
+            subimg = cv2.resize(subimg, (subimg_width, subimg_height))
+
+        end_x = start_x + subimg_width
+        end_y = HEIGHT_MARGIN + subimg_height
+        start_y = HEIGHT_MARGIN
+
+        if end_x > img_width:
+            print('SURPASSED: DRAWING SUBIMG AT RHS END')
+            start_x = img_width - subimg_width
+            end_x = img_width
+            img[start_y:end_y, start_x:end_x] = subimg
+        else:
+            img[start_y:end_y, start_x:end_x] = subimg
+            
+        next_start_x = int(start_x + half_subimg_width)
+        return img, next_start_x
 
 
 if __name__ == '__main__':
