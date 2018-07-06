@@ -73,6 +73,7 @@ class AvgFramesOnButtonClick():
         self.timer = OnOffTimer(TIMER_ON_SECONDS, TIMER_OFF_SECONDS)
         self.avg_frames = AvgFrames(None)
         self.state = 0
+        self.last_gpio_state = None
 
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
@@ -133,7 +134,8 @@ class AvgFramesOnButtonClick():
         while True:
             # the next line is a blocking call
             data, address = self.server_socket.recvfrom(1)
-            print('received data: ', data, ', address: ', address)
+            print('received data: ', data, ', address: ', address, ', time: ',
+                  time.strftime('%X'))
             sys.stdout.flush()
             self.last_socket_receive_time = time.time()
             time.sleep(SOCKET_SERVER_THREAD_SLEEP)
@@ -145,6 +147,11 @@ class AvgFramesOnButtonClick():
     def process_frame(self, frame):
         """Returns average of all frames after updating with weighted frame"""
         gpio_state = GPIO.input(GPIO_PIN)
+
+        if gpio_state != self.last_gpio_state:
+            print('new GPIO state: ', gpio_state, ', time: ',
+                  time.strftime('%X'))
+            self.last_gpio_state = gpio_state
 
         # determine whether our timer module is currrently on or not
         # and whether it just switched states (since the last time we checked)
@@ -170,13 +177,14 @@ class AvgFramesOnButtonClick():
                 if delta_time < MIN_SECONDS_ON:
                     frame = self.avg_frames.process_frame(frame)
                 else:
-                    print('DISENGAGE (DELTA_TIME > %ds)' % MIN_SECONDS_ON)
+                    print('DISENGAGE (DELTA_TIME > %ds), time: %s' %
+                          (MIN_SECONDS_ON, time.strftime('%X')))
                     frame = self.no_activity_frame
                     self.state = 0
         else:
             frame = self.avg_frames.process_frame(frame)
             if self.state == 0:
-                print('ENGAGE (STEPPED ON MAT)')
+                print('ENGAGE (STEPPED ON MAT), time: %s' % time.strftime('%X'))
                 self.tell_other_i_just_turned_on()
                 # this ensures that only when we switch from state 0 to
                 # an on state we will record self.state
