@@ -45,6 +45,7 @@ class MaxKNN(Gray):
         self.i_frame = 0
         self.disp_img = None
         self.start_x = 0
+        self.last_time = 0
 
     def reset(self, frame):
         """Re-sets self.disp_img"""
