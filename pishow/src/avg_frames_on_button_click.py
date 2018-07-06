@@ -177,34 +177,35 @@ class AvgFramesOnButtonClick():
         # else. same goes for if we have just received a message to turn on
         if received_on_message or timer_is_on:
             frame = self.avg_frames.process_frame(frame)
-            return
-
-        if gpio_state == 1:
-            # not stepping on footswitch
-            if self.last_footstep_time == TOO_LONG_AGO:
-                # not stepping on footswitch and last time is too long ago
-                frame = self.no_activity_frame
-            else:
-                # not stepping on footswitch, check if within MIN_SECONDS_ON
-                delta_time = time.time() - self.last_footstep_time
-                if delta_time < MIN_SECONDS_ON:
-                    # within MIN_SECONDS_ON so show real stuff
-                    frame = self.avg_frames.process_frame(frame)
-                else:
-                    # not within MIN_SECONDS_ON so show no activity
-                    print('DISENGAGE (DELTA_TIME > %ds), time: %s' %
-                          (MIN_SECONDS_ON, time.strftime('%X')))
-                    frame = self.no_activity_frame
-                    self.last_footstep_time = TOO_LONG_AGO
         else:
-            # stepping on footswitch
-            frame = self.avg_frames.process_frame(frame)
-            if self.last_footstep_time == TOO_LONG_AGO:
-                print('ENGAGE (STEPPED ON MAT), time: %s' % time.strftime('%X'))
-                self.tell_other_i_just_turned_on()
-                # this ensures that only when we switch from state 0 to
-                # an on state we will record self.last_footstep_time
-                self.last_footstep_time = time.time()
+            # we have no reason to turn on camera other than local footswitch
+            if gpio_state == 1:
+                # not stepping on footswitch
+                if self.last_footstep_time == TOO_LONG_AGO:
+                    # not stepping on footswitch and last time is too long ago
+                    frame = self.no_activity_frame
+                else:
+                    # not stepping on footswitch, check if within MIN_SECONDS_ON
+                    delta_time = time.time() - self.last_footstep_time
+                    if delta_time < MIN_SECONDS_ON:
+                        # within MIN_SECONDS_ON so show real stuff
+                        frame = self.avg_frames.process_frame(frame)
+                    else:
+                        # not within MIN_SECONDS_ON so show no activity
+                        print('DISENGAGE (DELTA_TIME > %ds), time: %s' %
+                              (MIN_SECONDS_ON, time.strftime('%X')))
+                        frame = self.no_activity_frame
+                        self.last_footstep_time = TOO_LONG_AGO
+            else:
+                # stepping on footswitch
+                frame = self.avg_frames.process_frame(frame)
+                if self.last_footstep_time == TOO_LONG_AGO:
+                    print('ENGAGE (STEPPED ON MAT), time: %s' %
+                          time.strftime('%X'))
+                    self.tell_other_i_just_turned_on()
+                    # this ensures that only when we switch from state 0 to
+                    # an on state we will record self.last_footstep_time
+                    self.last_footstep_time = time.time()
 
         sys.stdout.flush()
 
