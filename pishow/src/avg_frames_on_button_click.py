@@ -57,6 +57,8 @@ TIMER_OFF_SECONDS = 3480
 # minimum duration to show the other side pisee
 MIN_SECONDS_ON = 45
 
+TOO_LONG_AGO = -1
+
 class AvgFramesOnButtonClick():
     """Show avg frames when switch is on, otherwise show splash screen"""
     def __init__(self, arguments):
@@ -72,7 +74,7 @@ class AvgFramesOnButtonClick():
         self.no_activity_frame = cv2.imread(SPLASH_IMAGE_PATH)
         self.timer = OnOffTimer(TIMER_ON_SECONDS, TIMER_OFF_SECONDS)
         self.avg_frames = AvgFrames(None)
-        self.state = 0
+        self.last_footstep_time = TOO_LONG_AGO
         self.last_gpio_state = None
 
         # GPIO setup
@@ -148,20 +150,22 @@ class AvgFramesOnButtonClick():
         """Returns average of all frames after updating with weighted frame"""
         gpio_state = GPIO.input(GPIO_PIN)
 
+        just_switched_gpio_state = False
         if gpio_state != self.last_gpio_state:
+            self.just_switched_gpio_state = True
             print('new GPIO state: ', gpio_state, ', time: ',
                   time.strftime('%X'))
             self.last_gpio_state = gpio_state
 
         # determine whether our timer module is currrently on or not
         # and whether it just switched states (since the last time we checked)
-        timer_is_on, just_switched = self.timer.is_on()
+        timer_is_on, just_switched_timer_state = self.timer.is_on()
 
-        if just_switched:
+        if just_switched_timer_state:
             print('Timer just switched state.')
 
         if self.last_socket_receive_time is not None:
-            time_since_message_arrived = (time.time()-
+            time_since_message_arrived = (time.time() -
                                           self.last_socket_receive_time)
         else:
             time_since_message_arrived = float('inf')
@@ -169,26 +173,38 @@ class AvgFramesOnButtonClick():
         received_on_message = (time_since_message_arrived <
                                SOCKET_RECEIVE_TIME_THRESHOLD)
 
-        if gpio_state == 1 and not timer_is_on and not received_on_message:
-            if self.state == 0:
+        # if the timer says we should be on, we turn on, regardless of anything
+        # else. same goes for if we have just received a message to turn on
+        if received_on_message or timer_is_on:
+            frame = self.avg_frames.process_frame(frame)
+            return
+
+        if gpio_state == 1:
+            # not stepping on footswitch
+            if self.last_footstep_time == TOO_LONG_AGO:
+                # not stepping on footswitch and last time is too long ago
                 frame = self.no_activity_frame
             else:
-                delta_time = time.time() - self.state
+                # not stepping on footswitch, check if within MIN_SECONDS_ON
+                delta_time = time.time() - self.last_footstep_time
                 if delta_time < MIN_SECONDS_ON:
+                    # within MIN_SECONDS_ON so show real stuff
                     frame = self.avg_frames.process_frame(frame)
                 else:
+                    # not within MIN_SECONDS_ON so show no activity
                     print('DISENGAGE (DELTA_TIME > %ds), time: %s' %
                           (MIN_SECONDS_ON, time.strftime('%X')))
                     frame = self.no_activity_frame
-                    self.state = 0
+                    self.last_footstep_time = TOO_LONG_AGO
         else:
+            # stepping on footswitch
             frame = self.avg_frames.process_frame(frame)
-            if self.state == 0:
+            if self.last_footstep_time == TOO_LONG_AGO:
                 print('ENGAGE (STEPPED ON MAT), time: %s' % time.strftime('%X'))
                 self.tell_other_i_just_turned_on()
                 # this ensures that only when we switch from state 0 to
-                # an on state we will record self.state
-                self.state = time.time()
+                # an on state we will record self.last_footstep_time
+                self.last_footstep_time = time.time()
 
         sys.stdout.flush()
 
