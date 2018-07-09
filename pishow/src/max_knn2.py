@@ -45,7 +45,7 @@ HEIGHT_MARGIN = 100
 
 # if TIME_DECAY_FACTOR < 1.0, the image values are less bright by this fraction
 # if TIME_DECAY_FACTOR == 1.0, the image decays completely on every frame
-TIME_DECAY_FACTOR = 0.95
+TIME_DECAY_FACTOR = 0.008
 
 # number of pixels to translate to the right each time
 HORIZONTAL_TRANSLATION = 30
@@ -129,7 +129,7 @@ class MaxKNN(Gray):
                     self.start_x
                 )
 
-        self.disp_img = TIME_DECAY_FACTOR * self.disp_img
+        self.disp_img = (1.0 - TIME_DECAY_FACTOR) * self.disp_img
 
         return self.disp_img
 
@@ -157,8 +157,8 @@ class MaxKNN(Gray):
             subimg = cv2.resize(subimg, (subimg_width, subimg_height))
 
         end_x = start_x + subimg_width
-        end_y = HEIGHT_MARGIN + subimg_height
         start_y = HEIGHT_MARGIN
+        end_y = HEIGHT_MARGIN + subimg_height
 
         delta_x = end_x - img_width
         if delta_x > 0:
@@ -171,9 +171,14 @@ class MaxKNN(Gray):
             translation_matrix = np.float32([[1, 0, -delta_x], [0, 1, 0]])
             img = cv2.warpAffine(img, translation_matrix, 
                                  (img_width, img_height))
-            img[start_y:end_y, start_x:end_x] = subimg
-        else:
-            img[start_y:end_y, start_x:end_x] = subimg
+
+
+        # the following 3 lines do the overlay
+        prev_subimg = img[start_y:end_y, start_x:end_x]
+        prev_subimg[subimg != 0] = 255.0
+        subimg = prev_subimg
+
+        img[start_y:end_y, start_x:end_x] = subimg
             
         next_start_x = int(start_x + horizontal_translation)
         return img, next_start_x
