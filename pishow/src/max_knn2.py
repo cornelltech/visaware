@@ -7,6 +7,17 @@ import cv2
 import numpy as np
 from gray import Gray
 
+# NOTES ON REPRESENTING TIME:
+#
+# you're about to draw a new figure, you need to draw it at
+# maximum brightness, but first you need to darken the image that's
+# there already in which you're drawing the new silhouette. How much
+# do we darken what's there by? This has to be time dependent.
+#
+# Algorithm:
+# - Each time you draw, draw at max brightness
+# - As time goes by, darken what's there
+# - DONE
 
 # same as avg_frames.py ALPHA
 ALPHA = 0.1
@@ -32,9 +43,12 @@ IDLE_START_TIME = 0.5
 # vertical margin for drawing
 HEIGHT_MARGIN = 100
 
-# the maximum time (between successive motion sequences) 
-# anything longer than that would make the (prev) image 100% faded
-MAX_TIME_FADE = 10
+# if TIME_DECAY_FACTOR < 1.0, the image values are less bright by this fraction
+# if TIME_DECAY_FACTOR == 1.0, the image decays completely on every frame
+TIME_DECAY_FACTOR = 0.95
+
+# number of pixels to translate to the right each time
+HORIZONTAL_TRANSLATION = 30
 
 class MaxKNN(Gray):
     """KNN background subtraction"""
@@ -60,6 +74,7 @@ class MaxKNN(Gray):
     def process_frame(self, frame):
         """KNN background subtraction"""
         gray = super().process_frame(frame)
+
         knn_img = self.fgbg.apply(gray)
         nnz = cv2.countNonZero(knn_img)
 
@@ -108,25 +123,13 @@ class MaxKNN(Gray):
                 
                 self.moving = False
 
-                # before drawing new silhouette, fade self.disp_img by
-                # how much time has passed since last motion detection
-                scale_factor = 0.0
-                if delta_time < MAX_TIME_FADE:
-                    scale_factor = (MAX_TIME_FADE - delta_time) / MAX_TIME_FADE
-
-                min, max, min_loc, max_loc = cv2.minMaxLoc(self.disp_img)
-                
-                self.disp_img = (self.disp_img - min) / (max - min)
-
-                self.disp_img = np.float32(self.disp_img) * scale_factor
-
-                # rows, cols = self.subimg.shape
-                # self.disp_img[10:10+rows, 10:10+cols] = self.subimg
                 self.disp_img, self.start_x = self.draw_silhouette(
                     self.disp_img,
                     self.subimg,
                     self.start_x
                 )
+
+        self.disp_img = TIME_DECAY_FACTOR * self.disp_img
 
         return self.disp_img
 
@@ -142,7 +145,9 @@ class MaxKNN(Gray):
         subimg_shape = subimg.shape
         subimg_height = subimg_shape[0]
         subimg_width = subimg_shape[1]
-        half_subimg_width = np.floor(0.5 * subimg_width)
+        
+        # horizontal_translation = np.floor(0.5 * subimg_width)
+        horizontal_translation = HORIZONTAL_TRANSLATION
 
         desired_subimg_height = img_height - 2 * HEIGHT_MARGIN
         if desired_subimg_height != subimg_height:
@@ -170,7 +175,7 @@ class MaxKNN(Gray):
         else:
             img[start_y:end_y, start_x:end_x] = subimg
             
-        next_start_x = int(start_x + half_subimg_width)
+        next_start_x = int(start_x + horizontal_translation)
         return img, next_start_x
 
 
