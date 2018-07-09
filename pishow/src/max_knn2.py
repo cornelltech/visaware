@@ -7,21 +7,6 @@ import cv2
 import numpy as np
 from gray import Gray
 
-# NOTES ON REPRESENTING TIME:
-#
-# you're about to draw a new figure, you need to draw it at
-# maximum brightness, but first you need to darken the image that's
-# there already in which you're drawing the new silhouette. How much
-# do we darken what's there by? This has to be time dependent.
-#
-# Algorithm:
-# - Each time you draw, draw at max brightness
-# - As time goes by, darken what's there
-# - DONE
-
-# same as avg_frames.py ALPHA
-ALPHA = 0.1
-
 # a silhouette can not have MORE than this number of pixels
 NO_MORE_THAN = 30000
 # a silhouette can not have LESS than this number of pixels
@@ -46,6 +31,14 @@ HEIGHT_MARGIN = 100
 # if TIME_DECAY_FACTOR < 1.0, the image values are less bright by this fraction
 # if TIME_DECAY_FACTOR == 1.0, the image decays completely on every frame
 TIME_DECAY_FACTOR = 0.008
+
+# in addition to TIME_DECAY_FACTOR, which represents time and is applied
+# on each frame, we also want to represent the order of silhouettes (people)
+# and in cases where two people appeared in quick succession, we do not
+# want them both to be white (recent), as there will be very little decay
+# between their frames. so we apply NEW_FRAME_DECAY_FACTOR on each new
+# silhouette.
+NEW_FRAME_DECAY_FACTOR = 0.7
 
 # number of pixels to translate to the right each time
 HORIZONTAL_TRANSLATION = 30
@@ -76,6 +69,7 @@ class MaxKNN(Gray):
         gray = super().process_frame(frame)
 
         knn_img = self.fgbg.apply(gray)
+
         nnz = cv2.countNonZero(knn_img)
 
         frame_shape = frame.shape
@@ -97,7 +91,7 @@ class MaxKNN(Gray):
             # print('- found next candidate: ', self.grabbed_frame_num())
             # found the next candidate silhouette to use
             self.max_nnz = nnz
-            
+
             # crop rect into max_img
             # self.subimg = knn_img.copy()
             self.subimg = knn_img[bb_y:bb_y + bb_h, bb_x:bb_x+bb_w]
@@ -112,74 +106,81 @@ class MaxKNN(Gray):
                 print('Motion turns ON')
                 self.moving = True
                 self.max_nnz = 0
-        else:
-            if self.moving:
+        elif self.moving:
+           now = time.time()
+           delta_time = now - self.last_time
+           self.last_time = now
 
-                now = time.time()
-                delta_time = now - self.last_time
-                self.last_time = now
+           print('Motion turns OFF ', delta_time)
 
-                print('Motion turns OFF ', delta_time)
-                
-                self.moving = False
+           self.moving = False
 
-                self.disp_img, self.start_x = self.draw_silhouette(
-                    self.disp_img,
-                    self.subimg,
-                    self.start_x
-                )
+           self.disp_img, self.start_x = self.draw_silhouette(
+               self.disp_img,
+               self.subimg,
+               self.start_x
+           )
 
         self.disp_img = (1.0 - TIME_DECAY_FACTOR) * self.disp_img
 
         return self.disp_img
 
-    def draw_silhouette(self, img, subimg, start_x):
+    def draw_silhouette(self, img, new_subimg, start_x):
         """draw_silhouette"""
-        print('draw_silhouette(img, subimg, %d)' % start_x);
+        print('draw_silhouette(img, new_subimg, %d)' % start_x);
         print('self.start_x: %d' % self.start_x)
 
         img_shape = img.shape
         img_height = img_shape[0]
         img_width = img_shape[1]
 
-        subimg_shape = subimg.shape
-        subimg_height = subimg_shape[0]
-        subimg_width = subimg_shape[1]
-        
-        # horizontal_translation = np.floor(0.5 * subimg_width)
+        new_subimg_shape = new_subimg.shape
+        new_subimg_height = new_subimg_shape[0]
+        new_subimg_width = new_subimg_shape[1]
+
+        # horizontal_translation = np.floor(0.5 * new_subimg_width)
         horizontal_translation = HORIZONTAL_TRANSLATION
 
-        desired_subimg_height = img_height - 2 * HEIGHT_MARGIN
-        if desired_subimg_height != subimg_height:
-            subimg_width = int(
-                desired_subimg_height * subimg_width / subimg_height)
-            subimg_height = int(desired_subimg_height)
-            subimg = cv2.resize(subimg, (subimg_width, subimg_height))
+        desired_new_subimg_height = img_height - 2 * HEIGHT_MARGIN
+        if desired_new_subimg_height != new_subimg_height:
+            new_subimg_width = int(desired_new_subimg_height * \
+                                   new_subimg_width / new_subimg_height)
+            new_subimg_height = int(desired_new_subimg_height)
+            new_subimg = cv2.resize(new_subimg,
+                                    (new_subimg_width, new_subimg_height))
 
-        end_x = start_x + subimg_width
+        end_x = start_x + new_subimg_width
         start_y = HEIGHT_MARGIN
-        end_y = HEIGHT_MARGIN + subimg_height
+        end_y = HEIGHT_MARGIN + new_subimg_height
 
         delta_x = end_x - img_width
         if delta_x > 0:
-            print('SURPASSED: DRAWING SUBIMG AT RHS END')
+            print('SURPASSED: DRAWING NEW_SUBIMG AT RHS END')
 
-            start_x = img_width - subimg_width
+            start_x = img_width - new_subimg_width
             end_x = img_width
 
             # shift img to left first
             translation_matrix = np.float32([[1, 0, -delta_x], [0, 1, 0]])
-            img = cv2.warpAffine(img, translation_matrix, 
+            img = cv2.warpAffine(img, translation_matrix,
                                  (img_width, img_height))
 
-
         # the following 3 lines do the overlay
-        prev_subimg = img[start_y:end_y, start_x:end_x]
-        prev_subimg[subimg != 0] = 255.0
-        subimg = prev_subimg
+        current_subimg = img[start_y:end_y, start_x:end_x] * \
+                         (1.0 - NEW_FRAME_DECAY_FACTOR)
 
-        img[start_y:end_y, start_x:end_x] = subimg
-            
+        cv2.imshow('current_subimg', current_subimg)
+
+        current_subimg = img[start_y:end_y, start_x:end_x]
+
+        current_subimg[new_subimg != 0] = 255.0
+
+        current_subimg = cv2.convertScaleAbs(current_subimg)
+
+        cv2.imshow('current_subimg2', current_subimg)
+
+        img[start_y:end_y, start_x:end_x] = current_subimg
+
         next_start_x = int(start_x + horizontal_translation)
         return img, next_start_x
 
