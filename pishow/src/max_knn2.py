@@ -38,7 +38,7 @@ TIME_DECAY_FACTOR = 0.008
 # want them both to be white (recent), as there will be very little decay
 # between their frames. so we apply NEW_FRAME_DECAY_FACTOR on each new
 # silhouette.
-NEW_FRAME_DECAY_FACTOR = 0.7
+ALPHA = 0.95
 
 # number of pixels to translate to the right each time
 HORIZONTAL_TRANSLATION = 30
@@ -98,7 +98,7 @@ class MaxKNN(Gray):
 
         if time.time() - self.start_time < IDLE_START_TIME:
             # Do nothing for the first IDLE_START_TIME seconds
-            time.sleep(IDLE_START_TIME/10.0)
+            time.sleep(IDLE_START_TIME / 10.0)
             return knn_img
 
         if nnz > MOTION_MIN_NNZ:
@@ -121,69 +121,84 @@ class MaxKNN(Gray):
                self.start_x
            )
 
-        self.disp_img = (1.0 - TIME_DECAY_FACTOR) * self.disp_img
+        # self.disp_img = (1.0 - TIME_DECAY_FACTOR) * self.disp_img
 
         return self.disp_img
 
-    def draw_silhouette(self, img, new_subimg, start_x):
+    def draw_silhouette(self, img, subimg, start_x):
         """draw_silhouette"""
-        print('draw_silhouette(img, new_subimg, %d)' % start_x);
-        print('self.start_x: %d' % self.start_x)
+        print('draw_silhouette(img, subimg, start_x=%d)' % start_x);
 
-        img_shape = img.shape
-        img_height = img_shape[0]
-        img_width = img_shape[1]
+        img_height, img_width = img.shape[:2]
 
-        new_subimg_shape = new_subimg.shape
-        new_subimg_height = new_subimg_shape[0]
-        new_subimg_width = new_subimg_shape[1]
+        subimg_height, subimg_width = subimg.shape[:2]
 
-        # horizontal_translation = np.floor(0.5 * new_subimg_width)
+        # horizontal_translation = np.floor(0.5 * subimg_width)
         horizontal_translation = HORIZONTAL_TRANSLATION
 
-        desired_new_subimg_height = img_height - 2 * HEIGHT_MARGIN
-        if desired_new_subimg_height != new_subimg_height:
-            new_subimg_width = int(desired_new_subimg_height * \
-                                   new_subimg_width / new_subimg_height)
-            new_subimg_height = int(desired_new_subimg_height)
-            new_subimg = cv2.resize(new_subimg,
-                                    (new_subimg_width, new_subimg_height))
+        desired_subimg_height = img_height - 2 * HEIGHT_MARGIN
 
-        end_x = start_x + new_subimg_width
+        if desired_subimg_height != subimg_height:
+            factor = desired_subimg_height / subimg_height
+            print('resizing height from %d to %d, factor: %f' %
+                  (subimg_height, desired_subimg_height, factor))
+            subimg = cv2.resize(subimg, (0, 0), fx=factor, fy=factor)
+            subimg_height, subimg_width = subimg.shape[:2]
+
+        end_x = start_x + subimg_width
         start_y = HEIGHT_MARGIN
-        end_y = HEIGHT_MARGIN + new_subimg_height
+        end_y = HEIGHT_MARGIN + subimg_height
 
         delta_x = end_x - img_width
+        # check and fix for special case (which ends up being the main case
+        # once we reach it) where you've reached the right end of the image
         if delta_x > 0:
-            print('SURPASSED: DRAWING NEW_SUBIMG AT RHS END')
-
-            start_x = img_width - new_subimg_width
+            print('SURPASSED: DRAWING SUBIMG AT RHS END')
+            # shift img to left first
+            translation_mat = np.float32([[1, 0, -delta_x], [0, 1, 0]])
+            img = cv2.warpAffine(img, translation_mat, (img_width, img_height))
+            # also modify start_x and end_x for smaller subimg
+            start_x = img_width - subimg_width
             end_x = img_width
 
-            # shift img to left first
-            translation_matrix = np.float32([[1, 0, -delta_x], [0, 1, 0]])
-            img = cv2.warpAffine(img, translation_matrix,
-                                 (img_width, img_height))
+        # OVERLAY:
+        # img = img * 0.5
 
-        # the following 3 lines do the overlay
-        current_subimg = img[start_y:end_y, start_x:end_x] * \
-                         (1.0 - NEW_FRAME_DECAY_FACTOR)
+        # grab the subwindow we will partially overwrite from the image
+        prev_subimg = img[start_y:end_y, start_x:end_x]
 
-        cv2.imshow('current_subimg', current_subimg)
+        img_max = img.max()
 
-        current_subimg = img[start_y:end_y, start_x:end_x]
+        if img_max > 0:
+            print('minmax: (%d, %d)' % (prev_subimg[prev_subimg != 0].min(),
+                                        prev_subimg.max()))
 
-        current_subimg[new_subimg != 0] = 255.0
+        # prev_subimg is the same shape of subimg.
+        # 
+        # we want to write the (nonzero only) pixels of subimg, overwriting
+        # those of prev_subimg with a value that's brighter
 
-        current_subimg = cv2.convertScaleAbs(current_subimg)
+        # mask has nonzero pixels of subimg
+        mask = subimg != 0
 
-        cv2.imshow('current_subimg2', current_subimg)
+        # scale subimg to be twice the image max value 
 
-        img[start_y:end_y, start_x:end_x] = current_subimg
+        if img_max > 0:
+            subimg[mask] = img_max * 2
 
-        next_start_x = int(start_x + horizontal_translation)
-        return img, next_start_x
+        prev_subimg[mask] = subimg[mask]
 
+        if img_max > 0:
+            print('minmax: (%d, %d)' % (prev_subimg[prev_subimg != 0].min(),
+                                        prev_subimg.max()))
+
+        cv2.imshow('prev_subimg', prev_subimg)
+
+        print('post max: ', prev_subimg.max())
+
+        img[start_y:end_y, start_x:end_x] = prev_subimg
+
+        return img.copy(), start_x + horizontal_translation
 
 if __name__ == '__main__':
     MaxKNN(sys.argv[1]).start()
