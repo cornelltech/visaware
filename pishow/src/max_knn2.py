@@ -30,15 +30,11 @@ HEIGHT_MARGIN = 100
 
 # if TIME_DECAY_FACTOR < 1.0, the image values are less bright by this fraction
 # if TIME_DECAY_FACTOR == 1.0, the image decays completely on every frame
-TIME_DECAY_FACTOR = 0.008
+TIME_DECAY_FACTOR = 0.0005
 
-# in addition to TIME_DECAY_FACTOR, which represents time and is applied
-# on each frame, we also want to represent the order of silhouettes (people)
-# and in cases where two people appeared in quick succession, we do not
-# want them both to be white (recent), as there will be very little decay
-# between their frames. so we apply NEW_FRAME_DECAY_FACTOR on each new
-# silhouette.
-ALPHA = 0.95
+# how much to decay all other people by (i.e. to multiply them by
+# PERSON_DECAY_FACTOR) when a new person comes into the picture
+PERSON_DECAY_FACTOR = 0.8
 
 # number of pixels to translate to the right each time
 HORIZONTAL_TRANSLATION = 30
@@ -94,7 +90,9 @@ class MaxKNN(Gray):
 
             # crop rect into max_img
             # self.subimg = knn_img.copy()
-            self.subimg = knn_img[bb_y:bb_y + bb_h, bb_x:bb_x+bb_w]
+            self.subimg = cv2.convertScaleAbs(
+                knn_img[bb_y:bb_y + bb_h, bb_x:bb_x+bb_w]
+            )
 
         if time.time() - self.start_time < IDLE_START_TIME:
             # Do nothing for the first IDLE_START_TIME seconds
@@ -121,9 +119,9 @@ class MaxKNN(Gray):
                self.start_x
            )
 
-        # self.disp_img = (1.0 - TIME_DECAY_FACTOR) * self.disp_img
+        self.disp_img = (1.0 - TIME_DECAY_FACTOR) * self.disp_img
 
-        return self.disp_img
+        return cv2.convertScaleAbs(self.disp_img)
 
     def draw_silhouette(self, img, subimg, start_x):
         """draw_silhouette"""
@@ -161,44 +159,21 @@ class MaxKNN(Gray):
             start_x = img_width - subimg_width
             end_x = img_width
 
-        # OVERLAY:
-        # img = img * 0.5
+        img = img * PERSON_DECAY_FACTOR
 
         # grab the subwindow we will partially overwrite from the image
         prev_subimg = img[start_y:end_y, start_x:end_x]
 
-        img_max = img.max()
-
-        if img_max > 0:
-            print('minmax: (%d, %d)' % (prev_subimg[prev_subimg != 0].min(),
-                                        prev_subimg.max()))
-
-        # prev_subimg is the same shape of subimg.
-        # 
-        # we want to write the (nonzero only) pixels of subimg, overwriting
-        # those of prev_subimg with a value that's brighter
-
         # mask has nonzero pixels of subimg
         mask = subimg != 0
 
-        # scale subimg to be twice the image max value 
-
-        if img_max > 0:
-            subimg[mask] = img_max * 2
-
         prev_subimg[mask] = subimg[mask]
 
-        if img_max > 0:
-            print('minmax: (%d, %d)' % (prev_subimg[prev_subimg != 0].min(),
-                                        prev_subimg.max()))
-
-        cv2.imshow('prev_subimg', prev_subimg)
-
-        print('post max: ', prev_subimg.max())
+        # cv2.imshow('prev_subimg', prev_subimg)
 
         img[start_y:end_y, start_x:end_x] = prev_subimg
 
-        return img.copy(), start_x + horizontal_translation
+        return cv2.convertScaleAbs(img), start_x + horizontal_translation
 
 if __name__ == '__main__':
     MaxKNN(sys.argv[1]).start()

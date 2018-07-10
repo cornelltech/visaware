@@ -19,6 +19,10 @@ from on_off_timer import OnOffTimer
 
 WINDOW_NAME = 'cam'
 
+# the number of seconds we wait for the camera stream until we decide
+# that there is no connection
+REQUEST_TIMEOUT = 2.0
+
 # path to image we show when there is no activity
 SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
 
@@ -89,7 +93,11 @@ class AvgFramesOnButtonClick():
         self.start_cam_thread()
 
     def start_cam_thread(self):
-        self.stream = requests.get(self.webcam_url, stream=True)
+        try:
+            self.stream = requests.get(self.webcam_url, stream=True,
+                                       timeout=2.0)
+        except requests.exceptions.Timeout as err:
+            
         thread = Thread(target=self.cam_thread_worker)
         thread.start()
 
