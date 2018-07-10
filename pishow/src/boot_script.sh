@@ -23,27 +23,28 @@
 # @lxterminal --command="/home/pi/workspace/visaware/pishow/src/boot_script.sh"
 
 MY_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
 
 cd $MY_DIR
 
 if [ ! -e "SCREEN_RESOLUTION" ]; then
-    echo "You must have a file named SCREEN_RESOLUTION in $MY_DIR"
-    echo -n "with the resolution of your screen (or projector) in it"
-    echo "(e.g. 800x600), exiting..."
+    echo "You must have a file named SCREEN_RESOLUTION in" >> "$LOG_FILE"
+    echo -n "$MY_DIR with the resolution of your screen (or " >> "$LOG_FILE"
+    echo "projector in it (e.g. 800x600), exiting..." >> "$LOG_FILE"
     exit 1
 fi
 
 if [ ! -e "WEBCAM_STREAM_URL" ]; then
-    echo "You must have a file named WEBCAM_STREAM_URL in $MY_DIR"
-    echo -n "with the URL of the webcam stream in it"
-    echo "(http://128.84.84.129:8080/?action=stream), exiting..."
+    echo "You must have a file named WEBCAM_STREAM_URL in " >> "$LOG_FILE"
+    echo -n "$MY_DIR with the URL of the webcam stream in it" >> "$LOG_FILE"
+    echo "(http://128.84.84.129:8080/?action=stream), exiting..." >> "$LOG_FILE"
     exit 1
 fi  
 
 if [ ! -e "OTHER_PISHOW_IP_ADDRESS" ]; then
-    echo "You must have a file named OTHER_PISHOW_IP_ADDRESS in $MY_DIR"
-    echo -n "with the other Raspberry pi IP address in it"
-    echo "(e.g. 128.84.84.130), exiting..."
+    echo "You must have a file named OTHER_PISHOW_IP_ADDRESS in " >> "$LOG_FILE"
+    echo -n "$MY_DIR with other Raspberry-Pi's IP address in it" >> "$LOG_FILE"
+    echo "(e.g. 128.84.84.130), exiting..." >> "$LOG_FILE"
     exit 1
 fi  
 
@@ -57,8 +58,7 @@ WEBCAM_URL="`cat WEBCAM_STREAM_URL`"
 # make sure the logs directory exists
 mkdir -p "/home/pi/logs"
 
-LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
-CMD="avg_frames_on_button_click.py"
+CMD="./avg_frames_on_button_click.py"
 
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 echo "`date` - boot_script.sh: starting .." >> "$LOG_FILE"
