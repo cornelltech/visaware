@@ -24,18 +24,41 @@
 
 MY_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+cd $MY_DIR
+
+if [ ! -e "SCREEN_RESOLUTION" ]; then
+    echo "You must have a file named SCREEN_RESOLUTION in $MY_DIR"
+    echo -n "with the resolution of your screen (or projector) in it"
+    echo "(e.g. 800x600), exiting..."
+    exit 1
+fi
+
+if [ ! -e "WEBCAM_STREAM_URL" ]; then
+    echo "You must have a file named WEBCAM_STREAM_URL in $MY_DIR"
+    echo -n "with the URL of the webcam stream in it"
+    echo "(http://128.84.84.129:8080/?action=stream), exiting..."
+    exit 1
+fi  
+
+if [ ! -e "OTHER_PISHOW_IP_ADDRESS" ]; then
+    echo "You must have a file named OTHER_PISHOW_IP_ADDRESS in $MY_DIR"
+    echo -n "with the other Raspberry pi IP address in it"
+    echo "(e.g. 128.84.84.130), exiting..."
+    exit 1
+fi  
+
 # full-screen width & height of screen
-WIDTH="`cat $MY_DIR/SCREEN_RESOLUTION | sed 's/x/ /' | awk '{print $1}'`"
-HEIGHT="`cat $MY_DIR/SCREEN_RESOLUTION | sed 's/x/ /' | awk '{print $2}'`"
+WIDTH="`cat SCREEN_RESOLUTION | sed 's/x/ /' | awk '{print $1}'`"
+HEIGHT="`cat SCREEN_RESOLUTION | sed 's/x/ /' | awk '{print $2}'`"
 MY_IP="`ifconfig | grep -A 1 eth0 | grep inet | awk '{print $2}'`"
-OTHER_IP="`cat $MY_DIR/OTHER_PISHOW_IP_ADDRESS`"
-WEBCAM_URL="`cat $MY_DIR/WEBCAM_STREAM_URL`"
+OTHER_IP="`cat OTHER_PISHOW_IP_ADDRESS`"
+WEBCAM_URL="`cat WEBCAM_STREAM_URL`"
 
 # make sure the logs directory exists
 mkdir -p "/home/pi/logs"
 
 LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
-CMD="$MY_DIR/avg_frames_on_button_click.py"
+CMD="avg_frames_on_button_click.py"
 
 echo "----------------------------------------------------------" >> "$LOG_FILE"
 echo "`date` - boot_script.sh: starting .." >> "$LOG_FILE"
