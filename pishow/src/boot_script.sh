@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # This is the script that user pi runs on pishow boot. This starts everything.
@@ -14,7 +13,7 @@
 # the other end, change the IP address in the file OTHER_PISHOW_IP_ADDRESS
 #
 # To change the URL of the webcam you are using on the other end, change
-# the full URL of the webcam's stream in the file WEBCAM_STREAM_URL 
+# the full URL of the webcam's stream in the file WEBCAM_STREAM_URL
 #
 # This script is started on a Raspberry Pi board that has been set up for
 # 1) Automatic login of user pi into a graphical desktop (to set this auto-
@@ -39,14 +38,14 @@ if [ ! -e "WEBCAM_STREAM_URL" ]; then
     echo -n "$MY_DIR with the URL of the webcam stream in it" >> "$LOG_FILE"
     echo "(http://128.84.84.129:8080/?action=stream), exiting..." >> "$LOG_FILE"
     exit 1
-fi  
+fi
 
 if [ ! -e "OTHER_PISHOW_IP_ADDRESS" ]; then
     echo "You must have a file named OTHER_PISHOW_IP_ADDRESS in " >> "$LOG_FILE"
     echo -n "$MY_DIR with other Raspberry-Pi's IP address in it" >> "$LOG_FILE"
     echo "(e.g. 128.84.84.130), exiting..." >> "$LOG_FILE"
     exit 1
-fi  
+fi
 
 # full-screen width & height of screen
 WIDTH="`cat SCREEN_RESOLUTION | sed 's/x/ /' | awk '{print $1}'`"
