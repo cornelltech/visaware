@@ -26,7 +26,7 @@ CAM_REQUEST_TIMEOUT = 3.0
 # path to image we show when there is no activity
 SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
 
-NO_CAM_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
+NO_CAM_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/no_cam.jpg'
 
 ################################################################################
 # Sockets-related globals
@@ -104,7 +104,7 @@ class AvgFramesOnButtonClick():
         #                                timeout=2.0)
         # except requests.exceptions.ConnectTimeout:
         #     self.stream = None
-        thread = Thread(target=self.cam_thread_worker).start()
+        thread = Thread(target=self.cam_thread_worker)
         thread.start()
 
     def cam_thread_worker(self):
@@ -115,14 +115,27 @@ class AvgFramesOnButtonClick():
                 try:
                     self.stream = requests.get(self.webcam_url, stream=True,
                                                timeout=CAM_REQUEST_TIMEOUT)
-                except requests.exceptions.ConnectTimeout:
-                    cv2.imshow(WINDOW_NAME, self.no_cam_frame)
+                except (requests.exceptions.ConnectTimeout,
+                        requests.exceptions.ConnectionError) as err:
                     self.stream = None
+                    print('Error: camera stream unavailable at URL %s\n%s' %
+                          (self.webcam_url, err))
+                    cv2.imshow(WINDOW_NAME, self.no_cam_frame)
+                    cv2.waitKey(1)
+                    sys.stdout.flush()
                     time.sleep(2)
             else:
                 # we have a stream
                 try:
-                    bytes += self.stream.raw.read(1024)
+                    chunk = self.stream.raw.read(1024)
+
+                    if not chunk:
+                        print('NO chunk!')
+                        sys.stdout.flush()
+                        self.stream = None
+
+                    bytes += chunk
+
                     a = bytes.find(b'\xff\xd8')
                     b = bytes.find(b'\xff\xd9')
                     if a != -1 and b != -1:
@@ -135,12 +148,14 @@ class AvgFramesOnButtonClick():
                         img = self.process_frame(img)
 
                         cv2.imshow(WINDOW_NAME, img)
-                        if cv2.waitKey(1) ==27:
+                        if cv2.waitKey(1) == 27:
                             print('Shutting down because user hit ESC ...')
                             sys.stdout.flush()
                             sys.exit(0)
 
-                except ThreadError as err:
+                # except ThreadError as err:
+                except:
+                    print('*** Error ***: ', sys.exc_info())
                     print('Camera grabbing thread error: ', err)
                     sys.stdout.flush()
 
