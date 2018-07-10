@@ -21,10 +21,12 @@ WINDOW_NAME = 'cam'
 
 # the number of seconds we wait for the camera stream until we decide
 # that there is no connection
-REQUEST_TIMEOUT = 2.0
+CAM_REQUEST_TIMEOUT = 3.0
 
 # path to image we show when there is no activity
 SPLASH_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
+
+NO_CAM_IMAGE_PATH = '/home/pi/workspace/visaware/pishow/src/splash.jpg'
 
 ################################################################################
 # Sockets-related globals
@@ -76,6 +78,8 @@ class AvgFramesOnButtonClick():
                               cv2.WINDOW_FULLSCREEN)
 
         self.no_activity_frame = cv2.imread(SPLASH_IMAGE_PATH)
+        self.no_cam_frame = cv2.imread(NO_CAM_IMAGE_PATH)
+
         self.timer = OnOffTimer(TIMER_ON_SECONDS, TIMER_OFF_SECONDS)
         self.avg_frames = AvgFrames(None)
         self.last_footstep_time = TOO_LONG_AGO
@@ -89,43 +93,57 @@ class AvgFramesOnButtonClick():
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.last_socket_receive_time = None
+        self.stream = None
         self.start_server_socket_thread()
         self.start_cam_thread()
 
+
     def start_cam_thread(self):
-        try:
-            self.stream = requests.get(self.webcam_url, stream=True,
-                                       timeout=2.0)
-        except requests.exceptions.Timeout as err:
-            
-        thread = Thread(target=self.cam_thread_worker)
+        # try:
+        #     self.stream = requests.get(self.webcam_url, stream=True,
+        #                                timeout=2.0)
+        # except requests.exceptions.ConnectTimeout:
+        #     self.stream = None
+        thread = Thread(target=self.cam_thread_worker).start()
         thread.start()
 
     def cam_thread_worker(self):
         bytes = b''
         while True:
-            try:
-                bytes += self.stream.raw.read(1024)
-                a = bytes.find(b'\xff\xd8')
-                b = bytes.find(b'\xff\xd9')
-                if a != -1 and b != -1:
-                    jpg = bytes[a:b+2]
-                    bytes= bytes[b+2:]
-                    img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),
-                                       cv2.IMREAD_COLOR)
+            if self.stream is None:
+                # we have no stream
+                try:
+                    self.stream = requests.get(self.webcam_url, stream=True,
+                                               timeout=CAM_REQUEST_TIMEOUT)
+                except requests.exceptions.ConnectTimeout:
+                    cv2.imshow(WINDOW_NAME, self.no_cam_frame)
+                    self.stream = None
+                    time.sleep(2)
+            else:
+                # we have a stream
+                try:
+                    bytes += self.stream.raw.read(1024)
+                    a = bytes.find(b'\xff\xd8')
+                    b = bytes.find(b'\xff\xd9')
+                    if a != -1 and b != -1:
+                        jpg = bytes[a:b+2]
+                        bytes= bytes[b+2:]
+                        img = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),
+                                           cv2.IMREAD_COLOR)
 
-                    # here's where we process the frame
-                    img = self.process_frame(img)
+                        # here's where we process the frame
+                        img = self.process_frame(img)
 
-                    cv2.imshow(WINDOW_NAME, img)
-                    if cv2.waitKey(1) ==27:
-                        print('Shutting down because user hit ESC ...')
-                        sys.stdout.flush()
-                        sys.exit(0)
+                        cv2.imshow(WINDOW_NAME, img)
+                        if cv2.waitKey(1) ==27:
+                            print('Shutting down because user hit ESC ...')
+                            sys.stdout.flush()
+                            sys.exit(0)
 
-            except ThreadError as err:
-                print('Camera grabbing thread error: ', err)
-                sys.stdout.flush()
+                except ThreadError as err:
+                    print('Camera grabbing thread error: ', err)
+                    sys.stdout.flush()
+
 
     def start_server_socket_thread(self):
         """Start thread that listens on a socket"""
