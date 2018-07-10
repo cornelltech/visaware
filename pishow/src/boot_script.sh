@@ -1,58 +1,39 @@
+
 #!/bin/bash
 
 # This is the script that user pi runs on pishow boot. This starts everything.
-
+#
+# NOTES: do not change the code in this script. You control it by changing
+# values in other files, in the same directory (folder) as this script:
+#
+# To change screen resolution (it depends on your screen or screen)
+# change it in the file SCREEN_RESOLUTION
+#
+# To change the IP address of the other Raspberry Pi board to which you are
+# sending commands - the one that is connected to the projector or screen on
+# the other end, change the IP address in the file OTHER_PISHOW_IP_ADDRESS
+#
+# To change the URL of the webcam you are using on the other end, change
+# the full URL of the webcam's stream in the file WEBCAM_STREAM_URL 
+#
 # This script is started on a Raspberry Pi board that has been set up for
 # 1) Automatic login of user pi into a graphical desktop (to set this auto-
 #    login up, use the command `sudo raspi-config`)
 # 2) Add the following line to `/home/pi/.config/lxsession/LXDE-pi/autostart`:
 # @lxterminal --command="/home/pi/workspace/visaware/pishow/src/boot_script.sh"
 
-################################################################################
-
-# NOTE: feel free to change anything beteen the hash character borders
-
-# full-screen width & height of projector
-WIDTH="800"
-HEIGHT="600"
-
-# The IP numbers (you may need to change these three ip-numbers)
-
-# NOTE: IP numbers we use for testing:
-# pisee-129 (near Benny's desk):  128.84.84.129
-# pishow-130 (near Benny's desk): 128.84.84.130
-# pisee-149 (CX lab):             128.84.84.149
-# pishow-150 (CX lab):            128.84.84.150
-
-# Use these numbers on pishow in CX lab:
-
-if [ ! -e 
-
-
-# MY_IP is the IP number of the pishow board on which this code is running:
-# NOTE: figures out own IP address automatically, don't edit MY_IP line below.
-MY_IP="`ifconfig | grep -A 1 eth0 | grep inet | awk '{print $2}'`"
-# OTHER_IP is the IP number of the other pishow board this one communicates with
-# OTHER_IP="128.84.84.130"
-OTHER_IP="`cat PISHOW_URL`"
-# WEBCAM_URL is the full URL of the pisee board or any webcam used near OTHER_IP
-# WEBCAM_URL="http://128.84.84.129:8080/?action=stream"
-WEBCAM_URL="`cat PISEE_URL`"
-
-# Use these numbers on pishow near Benny's desk:
-
-# MY_IP is the IP number of the pishow board on which this code is running:
-# MY_IP="128.84.84.130"
-# OTHER_IP is the IP number of the other pishow board this one communicates with
-# OTHER_IP="128.84.84.150"
-# WEBCAM_URL is the full URL of the pisee board or any webcam used near OTHER_IP
-# WEBCAM_URL="http://128.84.84.149:8080/?action=stream"
-################################################################################
-
-# Do not change anything below
-
 MY_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# full-screen width & height of screen
+WIDTH="`cat $MY_DIR/SCREEN_RESOLUTION | sed 's/x/ /' | awk '{print $1}'`"
+HEIGHT="`cat $MY_DIR/SCREEN_RESOLUTION | sed 's/x/ /' | awk '{print $2}'`"
+MY_IP="`ifconfig | grep -A 1 eth0 | grep inet | awk '{print $2}'`"
+OTHER_IP="`cat $MY_DIR/OTHER_PISHOW_IP_ADDRESS`"
+WEBCAM_URL="`cat $MY_DIR/WEBCAM_STREAM_URL`"
+
+# make sure the logs directory exists
 mkdir -p "/home/pi/logs"
+
 LOG_FILE="/home/pi/logs/boot_script`date +%F`.log"
 CMD="$MY_DIR/avg_frames_on_button_click.py"
 
