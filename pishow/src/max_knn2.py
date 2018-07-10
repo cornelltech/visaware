@@ -30,7 +30,7 @@ HEIGHT_MARGIN = 100
 
 # if TIME_DECAY_FACTOR < 1.0, the image values are less bright by this fraction
 # if TIME_DECAY_FACTOR == 1.0, the image decays completely on every frame
-TIME_DECAY_FACTOR = 0.0005
+TIME_DECAY_FACTOR = 0.0001
 
 # how much to decay all other people by (i.e. to multiply them by
 # PERSON_DECAY_FACTOR) when a new person comes into the picture
