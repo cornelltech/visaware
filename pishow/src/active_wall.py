@@ -55,11 +55,6 @@ class MaxKNN(Gray):
         self.start_x = 0
         self.last_time = time.time()
 
-    def reset(self, frame):
-        """Re-sets self.disp_img"""
-        if self.disp_img is None:
-            self.disp_img = np.zeros(frame.shape)
-
     def process_frame(self, frame):
         """KNN background subtraction"""
         gray = super().process_frame(frame)
@@ -78,6 +73,13 @@ class MaxKNN(Gray):
         rect = cv2.boundingRect(knn_img)
         bb_x, bb_y, bb_w, bb_h = rect
 
+        # Keep track of subimage with max nonzero # of pixels:
+        # this block checks if the number of nonzero (background difference)
+        # pixels amount and location satisfies what we think would be an ok
+        # silhouette.  if it does satisfy those conditions, then we remember
+        # the sub-image that had it, plus the number of nnz pixels is
+        # remembered - it is the max nnz, because one of the conditions for
+        # nnz is that it is greater than the max so far
         if nnz > self.max_nnz and \
            nnz < NO_MORE_THAN and \
            nnz > NO_LESS_THAN and \
@@ -91,33 +93,40 @@ class MaxKNN(Gray):
             # crop rect into max_img
             # self.subimg = knn_img.copy()
             self.subimg = cv2.convertScaleAbs(
-                knn_img[bb_y:bb_y + bb_h, bb_x:bb_x+bb_w]
-            )
+                knn_img[bb_y:bb_y + bb_h, bb_x:bb_x+bb_w])
 
+        # TODO: why returning knn_img here? we should return a zero image here
+        # instead
         if time.time() - self.start_time < IDLE_START_TIME:
             # Do nothing for the first IDLE_START_TIME seconds
             time.sleep(IDLE_START_TIME / 10.0)
             return knn_img
 
+        # this block detects motion changes (on->off / off->on) and as soon
+        # as it sees the on->off
         if nnz > MOTION_MIN_NNZ:
             if not self.moving:
-                print('Motion turns ON')
+                # there's some motion but self.moving is off so this means
+                # we have just detected an off->on switch
+                print('Motion change: OFF --> ON')
                 self.moving = True
                 self.max_nnz = 0
         elif self.moving:
-           now = time.time()
-           delta_time = now - self.last_time
-           self.last_time = now
-
-           print('Motion turns OFF ', delta_time)
-
-           self.moving = False
-
-           self.disp_img, self.start_x = self.draw_silhouette(
-               self.disp_img,
-               self.subimg,
-               self.start_x
-           )
+            # no motion whatsoever, but self.moving is true so this means
+            # we have just detected an on->off switch
+            now = time.time()
+            delta_time = now - self.last_time
+            self.last_time = now
+            
+            print('Motion change: ON --> OFF ', delta_time)
+            
+            self.moving = False
+            
+            self.disp_img, self.start_x = self.draw_silhouette(
+                self.disp_img,
+                self.subimg,
+                self.start_x
+            )
 
         self.disp_img = (1.0 - TIME_DECAY_FACTOR) * self.disp_img
 
