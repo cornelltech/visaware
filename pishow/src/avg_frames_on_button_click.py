@@ -155,8 +155,7 @@ class AvgFramesOnButtonClick():
 
                 # except ThreadError as err:
                 except:
-                    print('*** Error ***: ', sys.exc_info())
-                    print('Camera grabbing thread error: ', err)
+                    print('Camera grabbing thread error: ', sys.exc_info())
                     sys.stdout.flush()
 
 
