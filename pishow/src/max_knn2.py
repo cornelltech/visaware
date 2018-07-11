@@ -123,6 +123,36 @@ class MaxKNN(Gray):
 
         return cv2.convertScaleAbs(self.disp_img)
 
+    def center_image(self, img):
+        """recenters everything via bounding rect"""
+        img_height, img_width = img.shape[:2]
+        rect = cv2.boundingRect(img)
+        bb_x, bb_y, bb_w, bb_h = rect
+
+        if bb_w == 0:
+            return img
+
+        left_margin = bb_x
+        right_margin = img_width - (bb_x + bb_w)
+
+        # print('bb_x', bb_x, ' - bb_w', bb_w)
+        # print('left', left_margin, ' - right', right_margin)
+
+        if left_margin > 0 and left_margin >= right_margin:
+            # translate left by left_margin
+            translation = -0.5 * left_margin
+            print('case 1', translation)
+            translation_mat = np.float32([[1, 0, translation], [0, 1, 0]])
+            img = cv2.warpAffine(img, translation_mat, (img_width, img_height))
+        elif right_margin > 0 and right_margin >= left_margin:
+            # translate right by right_margin/2
+            translation = 0.5 * right_margin
+            print('case 2', translation)
+            translation_mat = np.float32([[1, 0, translation], [0, 1, 0]])
+            img = cv2.warpAffine(img, translation_mat, (img_width, img_height))
+
+        return img
+
     def draw_silhouette(self, img, subimg, start_x):
         """draw_silhouette"""
         print('draw_silhouette(img, subimg, start_x=%d)' % start_x);
@@ -173,7 +203,10 @@ class MaxKNN(Gray):
 
         img[start_y:end_y, start_x:end_x] = prev_subimg
 
-        return cv2.convertScaleAbs(img), start_x + horizontal_translation
+        # img = cv2.convertScaleAbs(img)
+        # img = self.center_image(img)
+
+        return img, start_x + horizontal_translation
 
 if __name__ == '__main__':
     MaxKNN(sys.argv[1]).start()
