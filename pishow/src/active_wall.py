@@ -57,6 +57,10 @@ class MaxKNN(Gray):
 
     def process_frame(self, frame):
         """KNN background subtraction"""
+
+        cv2.imshow('normal', frame)
+        cv2.waitKey(1)
+
         gray = super().process_frame(frame)
 
         knn_img = self.fgbg.apply(gray)
