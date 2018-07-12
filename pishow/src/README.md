@@ -15,8 +15,10 @@ for the visaware project.
 6) Copy the file `autostart` (in this directory) as follows
    `cp autostart /home/pi/.config/lxsession/LXDE-pi/
 7) Create the following three files in this direcotry:
-   Filename                | What to put in it (example)
-   ----------------------- | ---------------------------
-   OTHER_PISHOW_IP_ADDRESS | 128.84.84.130
-   SCREEN_RESOLUTION | 1024x768
-   WEBCAM_STREAM_URL | http://128.84.84.129:8080/?action=stream
+
+Filename                | What to put in it (example)
+----------------------- | ---------------------------
+OTHER_PISHOW_IP_ADDRESS | 128.84.84.130
+SCREEN_RESOLUTION | 1024x768
+WEBCAM_STREAM_URL | http://128.84.84.129:8080/?action=stream
+
