@@ -3,11 +3,13 @@
 This directory contains all source code running on the pishow board
 for the visaware project.
 
-The source code here relies on another repository. Clone it
-first, at the same parent folder of the current repository
-(same folder where you cloned the current repository) -
-this will make the symbolic links here point to the
-proper paths:
-```
-    git clone (https://github.com/cornelltech/opencv-video-loops)[https://github.com/cornelltech/opencv-video-loops]
-```
+### Installation - get a pishow board up and running
+1) Get an SD-card with Raspbian OS installed on it to boot with
+   *Current version is Raspbian 9 (stretch)*
+2) [Optional] Set the hostname using `raspi-config`
+3) Set the time zone using `raspi-config`
+4) Enable GPIO using `raspi-config`
+5) Clone the following two repositories into the same parent folder:
+   * [https://github.com/cornelltech/opencv-video-loops](https://github.com/cornelltech/opencv-video-loops)  
+   * [https://github.com/cornelltech/visaware](https://github.com/cornelltech/visaware)  
+6) Copy the file `autostart` here 
