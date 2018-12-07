@@ -1,7 +1,6 @@
 # visaware
 
-This repository contains all source code for our visual awareness
-experiments.
+This repository contains all source code for the Visual Awareness project.
 
 ## Contents
 
@@ -11,8 +10,6 @@ this folder.
 File or directory name | Purpose
 ---------------------- | -------
 data/                  | Contains sample videos for computer vision development
-doc/  | Miscellaneous documentation and system setup documents that may be of use
+doc/                   | Miscellaneous documentation and system setup documents that may be of use
 pisee/                 | All dev of Raspberry Pi that's connected to a camera
 pishow/                |     -"-                     connected to a projector
-.gitignore             | Files & patterns not included in this repository
-README.md              | This file
