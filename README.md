@@ -27,5 +27,5 @@ File or directory name | Purpose
 ---------------------- | -------
 data/                  | Contains sample videos for computer vision development
 doc/                   | Miscellaneous documentation and system setup documents that may be of use
-pisee/                 | All dev of Raspberry Pi that's connected to a camera
-pishow/                |     -"-                     connected to a projector
+pisee/                 | Raspberry Pi that's connected to a camera - little dev here, just the parameters used for mjpg_streamer
+pishow/                |     -"-                     connected to a projector.
